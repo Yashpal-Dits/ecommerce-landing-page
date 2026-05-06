@@ -1,0 +1,102 @@
+.hero {
+  padding: 44px 24px 24px;
+}
+
+.hero__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  min-height: 78vh;
+  border-radius: 32px;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+  grid-template-columns: 1fr;
+  background:
+    linear-gradient(130deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
+    rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+.hero__copy {
+  padding: 56px 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--primary-soft);
+  font-size: 0.8rem;
+  margin-bottom: 12px;
+}
+
+.hero__title {
+  font-size: clamp(2.8rem, 10vw, 6rem);
+  line-height: 0.96;
+  letter-spacing: 0.03em;
+  margin-bottom: 18px;
+}
+
+.hero__subtitle {
+  max-width: 520px;
+  color: var(--muted);
+  font-size: 1.03rem;
+}
+
+.hero__actions {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hero__button {
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.hero__button:hover {
+  transform: translateY(-2px);
+}
+
+.hero__button--primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+  color: #0a0d15;
+  box-shadow: 0 16px 36px rgba(137, 126, 255, 0.35);
+  border: none;
+}
+
+.hero__button--ghost {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.hero__media {
+  min-height: 360px;
+  background-image:
+    linear-gradient(to left, rgba(6, 7, 13, 0.2), rgba(6, 7, 13, 0.75)),
+    url("https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+}
+
+@media (min-width: 980px) {
+  .hero__inner {
+    grid-template-columns: 1.05fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 30px 14px 14px;
+  }
+
+  .hero__copy {
+    padding: 40px 24px;
+  }
+}

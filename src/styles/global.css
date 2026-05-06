@@ -1,0 +1,65 @@
+:root {
+  --bg: #06070d;
+  --surface: rgba(255, 255, 255, 0.08);
+  --surface-strong: rgba(255, 255, 255, 0.14);
+  --border: rgba(255, 255, 255, 0.2);
+  --text: #f6f8ff;
+  --muted: #b7bfd5;
+  --primary: #8a7dff;
+  --primary-soft: #9de9ff;
+  --shadow: 0 20px 60px rgba(5, 8, 19, 0.45);
+  --radius: 20px;
+
+
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 10%, rgba(138, 125, 255, 0.18), transparent 40%),
+    radial-gradient(circle at 90% 0%, rgba(157, 233, 255, 0.14), transparent 35%),
+    radial-gradient(circle at 50% 100%, rgba(236, 111, 180, 0.12), transparent 30%),
+    var(--bg);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
