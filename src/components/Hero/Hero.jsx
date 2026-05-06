@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import "./Hero.css";
 
 export default function Hero() {
@@ -11,12 +12,12 @@ export default function Hero() {
             Trend-first streetwear, dailywear, and statement looks curated for India's next generation. Limited drops and fast pan-India delivery.
           </p>
           <div className="hero__actions">
-            <a className="hero__button hero__button--primary" href="#products">
+            <Link className="hero__button hero__button--primary" to="/#products">
               Shop Looks
-            </a>
-            <a className="hero__button hero__button--ghost" href="#categories">
+            </Link>
+            <Link className="hero__button hero__button--ghost" to="/#categories">
               Explore Styles
-            </a>
+            </Link>
           </div>
         </div>
 

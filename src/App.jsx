@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
-import Hero from "./components/Hero/Hero";
-import Categories from "./components/Categories/Categories";
-import ProductGrid from "./components/ProductGrid/ProductGrid";
-import Testimonials from "./components/Testimonials/Testimonials";
-import MemberSection from "./components/MemberSection/MemberSection";
 import Footer from "./components/Footer/Footer";
+import Home from "./pages/Home";
+import Sneakers from "./pages/Sneakers";
+import Streetwear from "./pages/Streetwear";
 
 const products = [
   {
@@ -76,38 +75,21 @@ const products = [
 
 export default function App() {
   const [cartCount, setCartCount] = useState(0);
-
   const featuredProducts = useMemo(() => products, []);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, []);
-
   const handleAddToCart = () => setCartCount((count) => count + 1);
 
   return (
-    <>
+    <BrowserRouter>
       <Navbar cartCount={cartCount} />
-      <Hero />
-      <Categories />
-      <ProductGrid products={featuredProducts} onAddToCart={handleAddToCart} />
-      <Testimonials />
-      <MemberSection />
+      
+      <Routes>
+        <Route path="/" element={<Home products={featuredProducts} onAddToCart={handleAddToCart} />} />
+        <Route path="/sneakers" element={<Sneakers />} />
+       v
+        <Route path="/streetwear" element={<Streetwear />} /> 
+      </Routes>
+
       <Footer />
-    </>
+    </BrowserRouter>
   );
 }

@@ -1,26 +1,27 @@
+import { Link } from 'react-router-dom';
 import "./Navbar.css";
 
 export default function Navbar({ cartCount }) {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <a href="#" className="navbar__logo">
+        <Link to="/" className="navbar__logo">
           GENZ.STORE
-        </a>
+        </Link>
 
         <nav className="navbar__menu" aria-label="Main navigation">
-          <a className="navbar__link" href="">
+          <Link className="navbar__link" to="/#products">
             New Drops
-          </a>
-          <a className="navbar__link" href="#categories">
+          </Link>
+          <Link className="navbar__link" to="/#categories">
             Style Edits
-          </a>
-          <a className="navbar__link" href="#testimonials">
+          </Link>
+          <Link className="navbar__link" to="/#testimonials">
             Community
-          </a>
-          <a className="navbar__link" href="#cta">
+          </Link>
+          <Link className="navbar__link" to="/#cta">
             Club
-          </a>
+          </Link>
         </nav>
 
         <button className="navbar__cart" type="button" aria-label="Cart">

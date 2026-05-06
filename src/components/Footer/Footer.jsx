@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import "./Footer.css";
 
 export default function Footer() {
@@ -5,15 +6,17 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer__inner">
         <div className="footer__brand">
-          <p className="footer__logo">GENZ.STORE</p>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <p className="footer__logo">GENZ.STORE</p>
+          </Link>
           <p className="footer__text">India-based fashion storefront for trend-first streetwear and statement looks.</p>
         </div>
 
         <nav className="footer__links" aria-label="Footer links">
-          <a href="#">Pan-India Shipping</a>
-          <a href="#">Returns</a>
-          <a href="#">Terms</a>
-          <a href="#">Contact</a>
+          <Link to="/#shipping">Pan-India Shipping</Link>
+          <Link to="/#returns">Returns</Link>
+          <Link to="/#terms">Terms</Link>
+          <Link to="/#contact">Contact</Link>
         </nav>
 
         <p className="footer__copyright">© 2026 GENZ.STORE</p>
