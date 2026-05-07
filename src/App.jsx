@@ -5,7 +5,8 @@ import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home";
 import Sneakers from "./pages/Sneakers";
 import Streetwear from "./pages/Streetwear";
-
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 const products = [
   {
     id: 1,
@@ -81,12 +82,14 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar cartCount={cartCount} />
-      
+
       <Routes>
         <Route path="/" element={<Home products={featuredProducts} onAddToCart={handleAddToCart} />} />
         <Route path="/sneakers" element={<Sneakers />} />
-       v
-        <Route path="/streetwear" element={<Streetwear />} /> 
+
+        <Route path="/streetwear" element={<Streetwear />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
 
       <Footer />

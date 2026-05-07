@@ -10,24 +10,26 @@ export default function Navbar({ cartCount }) {
         </Link>
 
         <nav className="navbar__menu" aria-label="Main navigation">
+        
+          <Link className="navbar__link" to="/">
+            Home
+          </Link>
+          
           <Link className="navbar__link" to="/#products">
-            New Drops
+            Shop
           </Link>
           <Link className="navbar__link" to="/#categories">
-            Style Edits
+            Categories
           </Link>
-          <Link className="navbar__link" to="/#testimonials">
-            Community
+          <Link className="navbar__login-btn" to="/login">
+            Login
           </Link>
-          <Link className="navbar__link" to="/#cta">
-            Club
-          </Link>
+          
+          <button className="navbar__cart" type="button" aria-label="Cart">
+            Cart
+            <span className="navbar__cart-count">{cartCount}</span>
+          </button>
         </nav>
-
-        <button className="navbar__cart" type="button" aria-label="Cart">
-          Cart
-          <span className="navbar__cart-count">{cartCount}</span>
-        </button>
       </div>
     </header>
   );
