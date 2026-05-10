@@ -1,19 +1,9 @@
-import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import "./Navbar.css";
 
-export default function Navbar({ cartCount }) {
-  const [currentUser, setCurrentUser] = useState(null);
+export default function Navbar({ cartCount, currentUser, setCurrentUser, addToast }) {
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    // Get current user from localStorage
-    const user = localStorage.getItem('currentUser');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
-  }, []);
 
   const handleLogout = () => {
     // Clear tokens and user data
@@ -22,7 +12,7 @@ export default function Navbar({ cartCount }) {
     localStorage.removeItem('currentUser');
     
     setCurrentUser(null);
-    alert('Logged out successfully!');
+    addToast('Logged out successfully!', 'success');
     navigate('/');
   };
 

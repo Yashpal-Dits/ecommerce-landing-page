@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
 
-export default function Login() {
+export default function Login({ setCurrentUser, addToast }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -80,41 +80,35 @@ export default function Login() {
       setApiError('');
 
       try {
-        // Generate username from email
         const username = formData.email.split('@')[0];
-
-        // Get registered users from localStorage
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        
-        // Find user by email
         const localUser = registeredUsers.find(u => u.email === formData.email);
 
-        // Check if user exists in localStorage OR try DummyJSON pre-existing users
         if (localUser) {
-          // Custom registered user - check password
           if (localUser.password !== formData.password) {
+            addToast('Incorrect password', 'error');
             setApiError('Incorrect password');
             setLoading(false);
             return;
           }
 
-          // Store tokens
           localStorage.setItem('accessToken', 'token_' + localUser.id);
           localStorage.setItem('refreshToken', 'refresh_token_' + localUser.id);
 
-          // Store current user
-          localStorage.setItem('currentUser', JSON.stringify({
+          const userData = {
             id: localUser.id,
             firstName: localUser.firstName,
             lastName: localUser.lastName,
             email: localUser.email,
             username: localUser.username,
             image: localUser.image
-          }));
+          };
 
-          alert(`Welcome back, ${localUser.firstName}!`);
+          localStorage.setItem('currentUser', JSON.stringify(userData));
+          setCurrentUser(userData);
+
+          addToast(`Welcome back, ${localUser.firstName}!`, 'success');
         } else {
-          
           try {
             const response = await axios.post('https://dummyjson.com/user/login', {
               username: username,
@@ -124,39 +118,40 @@ export default function Login() {
 
             const data = response.data;
 
-            // Store tokens from API
             localStorage.setItem('accessToken', data.accessToken);
             localStorage.setItem('refreshToken', data.refreshToken);
 
-            // Store current user
-            localStorage.setItem('currentUser', JSON.stringify({
+            const userData = {
               id: data.id,
               firstName: data.firstName,
               lastName: data.lastName,
               email: data.email,
               username: data.username,
               image: data.image
-            }));
+            };
 
-            alert(`Welcome back, ${data.firstName}!`);
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            setCurrentUser(userData);
+
+            addToast(`Welcome back, ${data.firstName}!`, 'success');
           } catch (apiError) {
+            addToast('Email not found or incorrect password', 'error');
             setApiError('Email not found or incorrect password');
             setLoading(false);
             return;
           }
         }
 
-        // Reset form
         setFormData({ email: '', password: '' });
         setErrors({});
         setTouched({});
 
-        // Redirect to HOME page
         setTimeout(() => {
           navigate('/');
         }, 1000);
       } catch (error) {
         console.log('Login failed:', error);
+        addToast('Login failed', 'error');
         setApiError(error.message || 'Login failed');
       } finally {
         setLoading(false);

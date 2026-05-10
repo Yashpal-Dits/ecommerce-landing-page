@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Auth.css';
 
-export default function Register() {
+export default function Register({ addToast }) {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
@@ -11,6 +11,7 @@ export default function Register() {
   const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
 
+  // Character limits
   const NAME_MAX = 50;
   const EMAIL_MAX = 50;
   const PASSWORD_MAX = 20;
@@ -18,7 +19,7 @@ export default function Register() {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
- 
+  // Real-time validation
   const validateField = (name, value) => {
     let error = '';
 
@@ -98,22 +99,18 @@ export default function Register() {
       setApiError('');
 
       try {
-        
         const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        
-        
         const emailExists = existingUsers.some(u => u.email === formData.email);
 
         if (emailExists) {
+          addToast('Email already registered. Please login.', 'error');
           setApiError('Email already registered. Please login.');
           setLoading(false);
           return;
         }
 
-    
         const username = formData.email.split('@')[0];
 
-      
         const response = await axios.post('https://dummyjson.com/users/add', {
           firstName: formData.name.split(' ')[0],
           lastName: formData.name.split(' ').slice(1).join(' ') || '',
@@ -124,7 +121,6 @@ export default function Register() {
 
         console.log('User added to API:', response.data);
 
-        // Save user to localStorage for login
         const newUser = {
           id: response.data.id,
           firstName: response.data.firstName,
@@ -138,19 +134,18 @@ export default function Register() {
         existingUsers.push(newUser);
         localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
 
-        alert('Account created successfully! Please login.');
+        addToast('Account created successfully! Please login.', 'success');
 
-        // Reset form
         setFormData({ name: '', email: '', password: '' });
         setErrors({});
         setTouched({});
 
-        // Redirect to LOGIN page
         setTimeout(() => {
           navigate('/login');
         }, 1000);
       } catch (error) {
         console.log('Registration failed:', error);
+        addToast('Registration failed', 'error');
         setApiError(error.response?.data?.message || error.message || 'Registration failed');
       } finally {
         setLoading(false);
