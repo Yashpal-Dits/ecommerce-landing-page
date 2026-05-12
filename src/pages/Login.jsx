@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './Auth.css';
 
 export default function Login({ setCurrentUser, addToast }) {
@@ -11,156 +10,104 @@ export default function Login({ setCurrentUser, addToast }) {
   const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
 
-  // Character limits
   const EMAIL_MAX = 50;
   const PASSWORD_MAX = 20;
-
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Real-time validation
   const validateField = (name, value) => {
     let error = '';
-
     if (name === 'email') {
-      if (!value.trim()) {
-        error = 'Email is required';
-      } else if (!emailRegex.test(value)) {
-        error = 'Invalid email format';
-      } else if (value.length > EMAIL_MAX) {
-        error = `Email must not exceed ${EMAIL_MAX} characters`;
-      }
+      if (!value.trim()) error = 'Email is required';
+      else if (!emailRegex.test(value)) error = 'Invalid email format';
+      else if (value.length > EMAIL_MAX) error = `Email must not exceed ${EMAIL_MAX} characters`;
     }
-
     if (name === 'password') {
-      if (!value) {
-        error = 'Password is required';
-      } else if (value.length > PASSWORD_MAX) {
-        error = `Password must not exceed ${PASSWORD_MAX} characters`;
-      }
+      if (!value) error = 'Password is required';
+      else if (value.length > PASSWORD_MAX) error = `Password must not exceed ${PASSWORD_MAX} characters`;
     }
-
     return error;
   };
 
-  // Handle change
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === 'email' && value.length > EMAIL_MAX) return;
     if (name === 'password' && value.length > PASSWORD_MAX) return;
-
     setFormData({ ...formData, [name]: value });
-
     const error = validateField(name, value);
     setErrors({ ...errors, [name]: error });
-
     if (apiError) setApiError('');
   };
 
-  // Handle blur
   const handleBlur = (e) => {
     const { name } = e.target;
     setTouched({ ...touched, [name]: true });
   };
 
-  // Form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     setTouched({ email: true, password: true });
 
-    let newErrors = {};
-    newErrors.email = validateField('email', formData.email);
-    newErrors.password = validateField('password', formData.password);
-
+    const newErrors = {
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
+    };
     setErrors(newErrors);
 
     if (!newErrors.email && !newErrors.password) {
       setLoading(true);
       setApiError('');
 
-      try {
-        const username = formData.email.split('@')[0];
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const localUser = registeredUsers.find(u => u.email === formData.email);
+      // Get registered users from localStorage
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const localUser = registeredUsers.find((u) => u.email === formData.email);
 
-        if (localUser) {
-          if (localUser.password !== formData.password) {
-            addToast('Incorrect password', 'error');
-            setApiError('Incorrect password');
-            setLoading(false);
-            return;
-          }
-
-          localStorage.setItem('accessToken', 'token_' + localUser.id);
-          localStorage.setItem('refreshToken', 'refresh_token_' + localUser.id);
-
-          const userData = {
-            id: localUser.id,
-            firstName: localUser.firstName,
-            lastName: localUser.lastName,
-            email: localUser.email,
-            username: localUser.username,
-            image: localUser.image
-          };
-
-          localStorage.setItem('currentUser', JSON.stringify(userData));
-          setCurrentUser(userData);
-
-          addToast(`Welcome back, ${localUser.firstName}!`, 'success');
-        } else {
-          try {
-            const response = await axios.post('https://dummyjson.com/user/login', {
-              username: username,
-              password: formData.password,
-              expiresInMins: 60
-            });
-
-            const data = response.data;
-
-            localStorage.setItem('accessToken', data.accessToken);
-            localStorage.setItem('refreshToken', data.refreshToken);
-
-            const userData = {
-              id: data.id,
-              firstName: data.firstName,
-              lastName: data.lastName,
-              email: data.email,
-              username: data.username,
-              image: data.image
-            };
-
-            localStorage.setItem('currentUser', JSON.stringify(userData));
-            setCurrentUser(userData);
-
-            addToast(`Welcome back, ${data.firstName}!`, 'success');
-          } catch (apiError) {
-            addToast('Email not found or incorrect password', 'error');
-            setApiError('Email not found or incorrect password');
-            setLoading(false);
-            return;
-          }
-        }
-
-        setFormData({ email: '', password: '' });
-        setErrors({});
-        setTouched({});
-
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
-      } catch (error) {
-        console.log('Login failed:', error);
-        addToast('Login failed', 'error');
-        setApiError(error.message || 'Login failed');
-      } finally {
+      if (!localUser) {
+        addToast('Email not found. Please register first.', 'error');
+        setApiError('Email not found. Please register first.');
         setLoading(false);
+        return;
       }
+
+      if (localUser.password !== formData.password) {
+        addToast('Incorrect password', 'error');
+        setApiError('Incorrect password');
+        setLoading(false);
+        return;
+      }
+
+      // Save token and user data
+      const accessToken = 'token_' + localUser.id + '_' + Date.now();
+      const refreshToken = 'refresh_' + localUser.id + '_' + Date.now();
+
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', refreshToken);
+
+      const userData = {
+        id: localUser.id,
+        firstName: localUser.firstName,
+        lastName: localUser.lastName,
+        email: localUser.email,
+        username: localUser.username,
+        image: localUser.image,
+      };
+
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      setCurrentUser(userData);
+
+      addToast(`Welcome back, ${localUser.firstName}!`, 'success');
+
+      setFormData({ email: '', password: '' });
+      setErrors({});
+      setTouched({});
+
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+
+      setLoading(false);
     }
   };
-
-  const isEmailLimitReached = formData.email.length === EMAIL_MAX;
-  const isPasswordLimitReached = formData.password.length === PASSWORD_MAX;
 
   return (
     <div className="auth-page">
@@ -188,7 +135,6 @@ export default function Login({ setCurrentUser, addToast }) {
               autoComplete="off"
             />
             <div className="field-messages">
-              {isEmailLimitReached && <span className="limit-msg">Maximum limit reached</span>}
               {touched.email && errors.email && <span className="error-msg">{errors.email}</span>}
             </div>
           </div>
@@ -208,7 +154,6 @@ export default function Login({ setCurrentUser, addToast }) {
               autoComplete="off"
             />
             <div className="field-messages">
-              {isPasswordLimitReached && <span className="limit-msg">Maximum limit reached</span>}
               {touched.password && errors.password && <span className="error-msg">{errors.password}</span>}
             </div>
           </div>

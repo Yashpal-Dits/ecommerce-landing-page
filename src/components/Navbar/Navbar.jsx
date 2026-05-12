@@ -6,7 +6,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
   const location = useLocation();
 
   const handleLogout = () => {
-    // Clear tokens and user data
+    
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
@@ -16,8 +16,9 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
     navigate('/');
   };
 
-  // Check if current page is login or register
+  
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+  const isContactPage = location.pathname === '/contact';
 
   return (
     <header className="navbar">
@@ -36,27 +37,33 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
           <Link className="navbar__link" to="/#categories">
             Categories
           </Link>
+          <Link className="navbar__link" to="/contact">
+            Contact
+          </Link>
 
-          {currentUser ? (
-            <>
-              <span className="navbar__user-info">
-                Hi, {currentUser.firstName}!
-              </span>
-              <button 
-                className="navbar__logout-btn" 
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <Link className="navbar__login-btn" to="/login">
-              Login
-            </Link>
+        
+          {!isAuthPage && (
+            currentUser ? (
+              <>
+                <span className="navbar__user-info">
+                  Hi, {currentUser.firstName}!
+                </span>
+                <button 
+                  className="navbar__logout-btn" 
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link className="navbar__login-btn" to="/login">
+                Login
+              </Link>
+            )
           )}
 
-          {/* Hide cart button on auth pages */}
-          {!isAuthPage && (
+          
+          {!isAuthPage && !isContactPage && (
             <button className="navbar__cart" type="button" aria-label="Cart">
               Cart
               <span className="navbar__cart-count">{cartCount}</span>

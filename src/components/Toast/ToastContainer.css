@@ -13,7 +13,7 @@
   pointer-events: all;
 }
 
-/* Mobile */
+
 @media (max-width: 640px) {
   .toast-container {
     top: 10px;

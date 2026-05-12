@@ -3,12 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import ToastContainer from "./components/Toast/ToastContainer";
+import ProtectedRoute from "./utils/ProtectedRoute";
 import Home from "./pages/Home";
 import Sneakers from "./pages/Sneakers";
 import Streetwear from "./pages/Streetwear";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
+import Contact from "./pages/Contact";
 const products = [
   {
     id: 1,
@@ -74,7 +75,7 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
   const featuredProducts = useMemo(() => products, []);
 
-  // Check for logged-in user on app load
+  // Check if user is logged in on app load
   useEffect(() => {
     const user = localStorage.getItem('currentUser');
     if (user) {
@@ -84,7 +85,6 @@ export default function App() {
 
   const handleAddToCart = () => setCartCount((count) => count + 1);
 
-  // Toast functions
   const addToast = (message, type = 'success') => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -104,14 +104,22 @@ export default function App() {
       />
       
       <Routes>
+       
         <Route 
           path="/" 
-          element={<Home products={featuredProducts} onAddToCart={handleAddToCart} />} 
+          element={
+            <ProtectedRoute>
+              <Home products={featuredProducts} onAddToCart={handleAddToCart} />
+            </ProtectedRoute>
+          } 
         />
+        
+        
         <Route path="/sneakers" element={<Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />} />
         <Route path="/streetwear" element={<Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />} />
         <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
         <Route path="/register" element={<Register addToast={addToast} />} />
+        <Route path="/contact" element={<Contact addToast={addToast} />} />
       </Routes>
 
       <Footer />
