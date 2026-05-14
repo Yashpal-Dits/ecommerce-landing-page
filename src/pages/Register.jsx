@@ -79,26 +79,26 @@ export default function Register({ addToast }) {
   const PASSWORD_MAX = 20;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f3f5f8] px-4 py-20">
-      <div className="w-full max-w-[380px] bg-white p-10 rounded-[30px] border border-slate-200 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.18)]">
+    <div className="min-h-screen flex items-center justify-center bg-[#ebe7e7] pt-[100px] px-5 pb-15">
+      <div className="w-full max-w-[400px] bg-white rounded-xl py-10 px-[30px] shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-slate-950 mb-1 tracking-[-0.04em]">Create Account</h1>
-          <p className="text-sm text-slate-500">Join GENZ.STORE for exclusive drops</p>
+          <h1 className="text-[32px] font-black text-black mb-2">Create Account</h1>
+          <p className="text-base text-gray-500">Join GENZ.STORE for exclusive drops</p>
         </div>
 
         {formik.errors.submit && (
-          <div className="bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-2xl p-4 mb-5 text-xs font-medium text-red-700">
+          <div className="bg-red-50 border border-red-200 rounded py-3 px-4 mb-5 text-xs font-medium text-red-600 animate-slide-down">
             {formik.errors.submit}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={formik.handleSubmit} noValidate>
-          <div className="space-y-2">
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Full Name</label>
+        <form className="flex flex-col gap-5" onSubmit={formik.handleSubmit} noValidate>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#333]">Full Name *</label>
             <input
               type="text"
               name="name"
-              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.name && formik.errors.name ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+              className={`py-3 px-4 border-2 border-[#e5e7eb] rounded-md text-[15px] bg-white transition-colors focus:outline-none focus:border-black ${formik.touched.name && formik.errors.name ? 'border-red-500 bg-red-50 focus:border-red-500' : ''}`}
               placeholder="Enter your full name"
               value={formik.values.name}
               onChange={formik.handleChange}
@@ -107,22 +107,22 @@ export default function Register({ addToast }) {
               disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="space-y-1">
+            <div>
               {formik.values.name.length === NAME_MAX && (
-                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+                <span className="text-xs font-medium text-red-500 animate-fade-in">Maximum limit reached</span>
               )}
               {formik.touched.name && formik.errors.name && (
-                <span className="text-[11px] font-medium text-red-600">{formik.errors.name}</span>
+                <span className="text-xs font-medium text-red-500 animate-slide-down">{formik.errors.name}</span>
               )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Email</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#333]">Email Address *</label>
             <input
               type="text"
               name="email"
-              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.email && formik.errors.email ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+              className={`py-3 px-4 border-2 border-[#e5e7eb] rounded-md text-[15px] bg-white transition-colors focus:outline-none focus:border-black ${formik.touched.email && formik.errors.email ? 'border-red-500 bg-red-50 focus:border-red-500' : ''}`}
               placeholder="your@email.com"
               value={formik.values.email}
               onChange={formik.handleChange}
@@ -131,22 +131,22 @@ export default function Register({ addToast }) {
               disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="space-y-1">
+            <div>
               {formik.values.email.length === EMAIL_MAX && (
-                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+                <span className="text-xs font-medium text-red-500 animate-fade-in">Maximum limit reached</span>
               )}
               {formik.touched.email && formik.errors.email && (
-                <span className="text-[11px] font-medium text-red-600">{formik.errors.email}</span>
+                <span className="text-xs font-medium text-red-500 animate-slide-down">{formik.errors.email}</span>
               )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Password</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-semibold text-[#333]">Password *</label>
             <input
               type="password"
               name="password"
-              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.password && formik.errors.password ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+              className={`py-3 px-4 border-2 border-[#e5e7eb] rounded-md text-[15px] bg-white transition-colors focus:outline-none focus:border-black ${formik.touched.password && formik.errors.password ? 'border-red-500 bg-red-50 focus:border-red-500' : ''}`}
               placeholder="Min. 6 chars, Max. 20 chars"
               value={formik.values.password}
               onChange={formik.handleChange}
@@ -155,27 +155,27 @@ export default function Register({ addToast }) {
               disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="space-y-1">
+            <div>
               {formik.values.password.length === PASSWORD_MAX && (
-                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+                <span className="text-xs font-medium text-red-500 animate-fade-in">Maximum limit reached</span>
               )}
               {formik.touched.password && formik.errors.password && (
-                <span className="text-[11px] font-medium text-red-600">{formik.errors.password}</span>
+                <span className="text-xs font-medium text-red-500 animate-slide-down">{formik.errors.password}</span>
               )}
             </div>
           </div>
 
           <button
             type="submit"
-            className={`w-full rounded-[16px] bg-slate-950 py-3.5 text-sm font-semibold uppercase text-white transition duration-200 ease-in-out ${formik.isSubmitting ? 'cursor-wait opacity-80' : 'hover:bg-slate-800'} disabled:bg-slate-400 disabled:cursor-not-allowed`}
+            className={`w-full bg-black text-white py-3.5 text-[16px] font-bold uppercase rounded-md cursor-pointer transition-all mt-2 hover:bg-[#333] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed ${formik.isSubmitting ? 'opacity-80' : ''}`}
             disabled={formik.isSubmitting}
           >
             {formik.isSubmitting ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="text-center mt-6 text-sm text-slate-500">
-          Already have an account? <Link to="/login" className="font-semibold text-slate-950 hover:text-slate-700">Sign in</Link>
+        <div className="text-center mt-6 text-[15px] text-gray-500">
+          Already have an account? <Link to="/login" className="text-black font-bold hover:underline">Sign in</Link>
         </div>
       </div>
     </div>
