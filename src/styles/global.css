@@ -1,9 +1,13 @@
+@import "tailwindcss";
+
+
 :root {
   --black: #121212;
   --white: #ffffff;
   --gray: #f5f5f5;
   --nav-height: 80px;
 }
+
 
 * {
   margin: 0;
@@ -34,4 +38,11 @@ button {
 img {
   display: block;
   max-width: 100%;
+}
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }

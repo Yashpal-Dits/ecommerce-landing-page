@@ -1,170 +1,192 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Auth.css';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+const loginSchema = Yup.object({
+  email: Yup.string()
+    .required('Email is required')
+    .email('Invalid email format')
+    .max(50, 'Email must not exceed 50 characters'),
+  password: Yup.string()
+    .required('Password is required')
+    .max(20, 'Password must not exceed 20 characters'),
+});
 
 export default function Login({ setCurrentUser, addToast }) {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
+
+  const formik = useFormik({
+    initialValues: { email: '', password: '' },
+    validationSchema: loginSchema,
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
+      try {
+        // ── Local check 
+        const registeredUsers = JSON.parse(
+          localStorage.getItem('registeredUsers') || '[]'
+        );
+        const localUser = registeredUsers.find((u) => u.email === values.email);
+
+        if (!localUser) {
+          addToast('Email not found. Please register first.', 'error');
+          setErrors({ submit: 'Email not found. Please register first.' });
+          setSubmitting(false);
+          return;
+        }
+
+        if (localUser.password !== values.password) {
+          addToast('Incorrect password', 'error');
+          setErrors({ submit: 'Incorrect password' });
+          setSubmitting(false);
+          return;
+        }
+
+        // ── Get token from DummyJSON 
+        const dummyUsername = localUser.dummyUsername || 'emilys';
+        const dummyPassword = localUser.dummyPassword || 'emilyspass';
+
+        const tokenRes = await fetch('https://dummyjson.com/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: dummyUsername,
+            password: dummyPassword,
+            expiresInMins: 60,
+          }),
+        });
+
+        if (!tokenRes.ok) {
+          throw new Error('Authentication failed');
+        }
+
+        const tokenData = await tokenRes.json();
+
+        // ── Verify token 
+        const verifyRes = await fetch('https://dummyjson.com/user/me', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${tokenData.accessToken}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!verifyRes.ok) {
+          throw new Error('Token verification failed');
+        }
+
+        await verifyRes.json();
+
+        // ── Save tokens 
+        localStorage.setItem('accessToken', tokenData.accessToken);
+        localStorage.setItem('refreshToken', tokenData.refreshToken);
+
+        const userData = {
+          id: localUser.id,
+          firstName: localUser.firstName,
+          lastName: localUser.lastName,
+          email: localUser.email,
+          username: localUser.username,
+          image: localUser.image,
+          tokenVerified: true,
+        };
+
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        setCurrentUser(userData);
+
+        addToast(`Welcome back, ${localUser.firstName}!`, 'success');
+
+        resetForm();
+
+        setTimeout(() => navigate('/'), 1000);
+
+      } catch (err) {
+        console.error('Login error:', err);
+        setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
+        addToast(err.message || 'Something went wrong. Please try again.', 'error');
+      } finally {
+        setSubmitting(false);
+      }
+    },
+  });
 
   const EMAIL_MAX = 50;
   const PASSWORD_MAX = 20;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const validateField = (name, value) => {
-    let error = '';
-    if (name === 'email') {
-      if (!value.trim()) error = 'Email is required';
-      else if (!emailRegex.test(value)) error = 'Invalid email format';
-      else if (value.length > EMAIL_MAX) error = `Email must not exceed ${EMAIL_MAX} characters`;
-    }
-    if (name === 'password') {
-      if (!value) error = 'Password is required';
-      else if (value.length > PASSWORD_MAX) error = `Password must not exceed ${PASSWORD_MAX} characters`;
-    }
-    return error;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'email' && value.length > EMAIL_MAX) return;
-    if (name === 'password' && value.length > PASSWORD_MAX) return;
-    setFormData({ ...formData, [name]: value });
-    const error = validateField(name, value);
-    setErrors({ ...errors, [name]: error });
-    if (apiError) setApiError('');
-  };
-
-  const handleBlur = (e) => {
-    const { name } = e.target;
-    setTouched({ ...touched, [name]: true });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    setTouched({ email: true, password: true });
-
-    const newErrors = {
-      email: validateField('email', formData.email),
-      password: validateField('password', formData.password),
-    };
-    setErrors(newErrors);
-
-    if (!newErrors.email && !newErrors.password) {
-      setLoading(true);
-      setApiError('');
-
-      // Get registered users from localStorage
-      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const localUser = registeredUsers.find((u) => u.email === formData.email);
-
-      if (!localUser) {
-        addToast('Email not found. Please register first.', 'error');
-        setApiError('Email not found. Please register first.');
-        setLoading(false);
-        return;
-      }
-
-      if (localUser.password !== formData.password) {
-        addToast('Incorrect password', 'error');
-        setApiError('Incorrect password');
-        setLoading(false);
-        return;
-      }
-
-      // Save token and user data
-      const accessToken = 'token_' + localUser.id + '_' + Date.now();
-      const refreshToken = 'refresh_' + localUser.id + '_' + Date.now();
-
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-
-      const userData = {
-        id: localUser.id,
-        firstName: localUser.firstName,
-        lastName: localUser.lastName,
-        email: localUser.email,
-        username: localUser.username,
-        image: localUser.image,
-      };
-
-      localStorage.setItem('currentUser', JSON.stringify(userData));
-      setCurrentUser(userData);
-
-      addToast(`Welcome back, ${localUser.firstName}!`, 'success');
-
-      setFormData({ email: '', password: '' });
-      setErrors({});
-      setTouched({});
-
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-
-      setLoading(false);
-    }
-  };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>Welcome Back</h1>
-          <p>Sign in to continue to GENZ.STORE</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#f3f5f8] px-4 py-20">
+      <div className="w-full max-w-[380px] bg-white p-10 rounded-[30px] border border-slate-200 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.18)]">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-950 mb-1 tracking-[-0.04em]">Welcome Back</h1>
+          <p className="text-sm text-slate-500">Sign in to continue to GENZ.STORE</p>
         </div>
 
-        {apiError && <div className="api-error">{apiError}</div>}
+        {formik.errors.submit && (
+          <div className="bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-2xl p-4 mb-5 text-xs font-medium text-red-700">
+            {formik.errors.submit}
+          </div>
+        )}
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-field">
-            <label className="form-label">Email</label>
+        <form className="space-y-4" onSubmit={formik.handleSubmit} noValidate>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Email</label>
             <input
               type="text"
               name="email"
-              className={`form-input ${touched.email && errors.email ? 'input-error' : ''}`}
+              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.email && formik.errors.email ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
               placeholder="your@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               maxLength={EMAIL_MAX}
-              disabled={loading}
+              disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="field-messages">
-              {touched.email && errors.email && <span className="error-msg">{errors.email}</span>}
+            <div className="space-y-1">
+              {formik.values.email.length === EMAIL_MAX && (
+                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+              )}
+              {formik.touched.email && formik.errors.email && (
+                <span className="text-[11px] font-medium text-red-600">{formik.errors.email}</span>
+              )}
             </div>
           </div>
 
-          <div className="form-field">
-            <label className="form-label">Password</label>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Password</label>
             <input
               type="password"
               name="password"
-              className={`form-input ${touched.password && errors.password ? 'input-error' : ''}`}
+              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.password && formik.errors.password ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
               placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               maxLength={PASSWORD_MAX}
-              disabled={loading}
+              disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="field-messages">
-              {touched.password && errors.password && <span className="error-msg">{errors.password}</span>}
+            <div className="space-y-1">
+              {formik.values.password.length === PASSWORD_MAX && (
+                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+              )}
+              {formik.touched.password && formik.errors.password && (
+                <span className="text-[11px] font-medium text-red-600">{formik.errors.password}</span>
+              )}
             </div>
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Signing In...' : 'Sign In'}
+          <button
+            type="submit"
+            className={`w-full rounded-[16px] bg-slate-950 py-3.5 text-sm font-semibold uppercase text-white transition duration-200 ease-in-out ${formik.isSubmitting ? 'cursor-wait opacity-80' : 'hover:bg-slate-800'} disabled:bg-slate-400 disabled:cursor-not-allowed`}
+            disabled={formik.isSubmitting}
+          >
+            {formik.isSubmitting ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="auth-footer">
-          Don't have an account? <Link to="/register">Create one</Link>
+        <div className="text-center mt-6 text-sm text-slate-500">
+          Don't have an account? <Link to="/register" className="font-semibold text-slate-950 hover:text-slate-700">Create one</Link>
         </div>
       </div>
     </div>

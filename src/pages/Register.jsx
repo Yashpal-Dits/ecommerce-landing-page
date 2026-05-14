@@ -1,240 +1,181 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './Auth.css';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+
+const registerSchema = Yup.object({
+  name: Yup.string()
+    .required('Full name is required')
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must not exceed 50 characters'),
+  email: Yup.string()
+    .required('Email is required')
+    .email('Invalid email format')
+    .max(50, 'Email must not exceed 50 characters'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters')
+    .max(20, 'Password must not exceed 20 characters'),
+});
 
 export default function Register({ addToast }) {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
 
-  // Character limits
-  const NAME_MAX = 50;
-  const EMAIL_MAX = 50;
-  const PASSWORD_MAX = 20;
-  const PASSWORD_MIN = 6;
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Real-time validation
-  const validateField = (name, value) => {
-    let error = '';
-
-    if (name === 'name') {
-      if (!value.trim()) {
-        error = 'Full name is required';
-      } else if (value.length > NAME_MAX) {
-        error = `Name must not exceed ${NAME_MAX} characters`;
-      }
-    }
-
-    if (name === 'email') {
-      if (!value.trim()) {
-        error = 'Email is required';
-      } else if (!emailRegex.test(value)) {
-        error = 'Invalid email format';
-      } else if (value.length > EMAIL_MAX) {
-        error = `Email must not exceed ${EMAIL_MAX} characters`;
-      }
-    }
-
-    if (name === 'password') {
-      if (!value) {
-        error = 'Password is required';
-      } else if (value.length < PASSWORD_MIN) {
-        error = `Password must be at least ${PASSWORD_MIN} characters`;
-      } else if (value.length > PASSWORD_MAX) {
-        error = `Password must not exceed ${PASSWORD_MAX} characters`;
-      }
-    }
-
-    return error;
-  };
-
-  // Handle change
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === 'name' && value.length > NAME_MAX) return;
-    if (name === 'email' && value.length > EMAIL_MAX) return;
-    if (name === 'password' && value.length > PASSWORD_MAX) return;
-
-    setFormData({ ...formData, [name]: value });
-
-    if (touched[name]) {
-      const error = validateField(name, value);
-      setErrors({ ...errors, [name]: error });
-    }
-
-    if (apiError) setApiError('');
-  };
-
-  // Handle blur
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    setTouched({ ...touched, [name]: true });
-
-    const error = validateField(name, value);
-    setErrors({ ...errors, [name]: error });
-  };
-
-  // Form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setTouched({ name: true, email: true, password: true });
-
-    let newErrors = {};
-    newErrors.name = validateField('name', formData.name);
-    newErrors.email = validateField('email', formData.email);
-    newErrors.password = validateField('password', formData.password);
-
-    setErrors(newErrors);
-
-    if (!newErrors.name && !newErrors.email && !newErrors.password) {
-      setLoading(true);
-      setApiError('');
-
+  const formik = useFormik({
+    initialValues: { name: '', email: '', password: '' },
+    validationSchema: registerSchema,
+    validateOnBlur: true,
+    validateOnChange: true,
+    onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
       try {
-        const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const emailExists = existingUsers.some(u => u.email === formData.email);
+        const registeredUsers = JSON.parse(
+          localStorage.getItem('registeredUsers') || '[]'
+        );
 
+        const emailExists = registeredUsers.some(
+          (u) => u.email === values.email
+        );
         if (emailExists) {
           addToast('Email already registered. Please login.', 'error');
-          setApiError('Email already registered. Please login.');
-          setLoading(false);
+          setErrors({ submit: 'Email already registered. Please login.' });
+          setSubmitting(false);
           return;
         }
 
-        const username = formData.email.split('@')[0];
-
-        const response = await axios.post('https://dummyjson.com/users/add', {
-          firstName: formData.name.split(' ')[0],
-          lastName: formData.name.split(' ').slice(1).join(' ') || '',
-          email: formData.email,
-          username: username,
-          password: formData.password
-        });
-
-        console.log('User added to API:', response.data);
+        const username = values.email.split('@')[0];
 
         const newUser = {
-          id: response.data.id,
-          firstName: response.data.firstName,
-          lastName: response.data.lastName,
-          email: formData.email,
+          id: Date.now().toString(),
+          firstName: values.name.split(' ')[0],
+          lastName: values.name.split(' ').slice(1).join(' ') || '',
           username: username,
-          password: formData.password,
-          image: response.data.image
+          email: values.email,
+          password: values.password,
+          image: 'https://i.pravatar.cc/150?img=12',
+          dummyUsername: 'emilys',        
+          dummyPassword: 'emilyspass',   
         };
 
-        existingUsers.push(newUser);
-        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+        registeredUsers.push(newUser);
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 
         addToast('Account created successfully! Please login.', 'success');
 
-        setFormData({ name: '', email: '', password: '' });
-        setErrors({});
-        setTouched({});
+        resetForm();
 
-        setTimeout(() => {
-          navigate('/login');
-        }, 1000);
-      } catch (error) {
-        console.log('Registration failed:', error);
-        addToast('Registration failed', 'error');
-        setApiError(error.response?.data?.message || error.message || 'Registration failed');
+        setTimeout(() => navigate('/login'), 1000);
+
+      } catch (err) {
+        console.error('Register error:', err);
+        setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
+        addToast(err.message || 'Something went wrong. Please try again.', 'error');
       } finally {
-        setLoading(false);
+        setSubmitting(false);
       }
-    }
-  };
+    },
+  });
 
-  const isNameLimitReached = formData.name.length === NAME_MAX;
-  const isEmailLimitReached = formData.email.length === EMAIL_MAX;
-  const isPasswordLimitReached = formData.password.length === PASSWORD_MAX;
+  const NAME_MAX = 50;
+  const EMAIL_MAX = 50;
+  const PASSWORD_MAX = 20;
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>Create Account</h1>
-          <p>Join GENZ.STORE for exclusive drops</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#f3f5f8] px-4 py-20">
+      <div className="w-full max-w-[380px] bg-white p-10 rounded-[30px] border border-slate-200 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.18)]">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-black text-slate-950 mb-1 tracking-[-0.04em]">Create Account</h1>
+          <p className="text-sm text-slate-500">Join GENZ.STORE for exclusive drops</p>
         </div>
 
-        {apiError && <div className="api-error">{apiError}</div>}
+        {formik.errors.submit && (
+          <div className="bg-red-50 border border-red-200 border-l-4 border-l-red-500 rounded-2xl p-4 mb-5 text-xs font-medium text-red-700">
+            {formik.errors.submit}
+          </div>
+        )}
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-field">
-            <label className="form-label">Full Name</label>
+        <form className="space-y-4" onSubmit={formik.handleSubmit} noValidate>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Full Name</label>
             <input
               type="text"
               name="name"
-              className={`form-input ${touched.name && errors.name ? 'input-error' : ''}`}
+              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.name && formik.errors.name ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
               placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              value={formik.values.name}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               maxLength={NAME_MAX}
-              disabled={loading}
+              disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="field-messages">
-              {isNameLimitReached && <span className="limit-msg">Maximum limit reached</span>}
-              {touched.name && errors.name && <span className="error-msg">{errors.name}</span>}
+            <div className="space-y-1">
+              {formik.values.name.length === NAME_MAX && (
+                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+              )}
+              {formik.touched.name && formik.errors.name && (
+                <span className="text-[11px] font-medium text-red-600">{formik.errors.name}</span>
+              )}
             </div>
           </div>
 
-          <div className="form-field">
-            <label className="form-label">Email</label>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Email</label>
             <input
               type="text"
               name="email"
-              className={`form-input ${touched.email && errors.email ? 'input-error' : ''}`}
+              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.email && formik.errors.email ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
               placeholder="your@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               maxLength={EMAIL_MAX}
-              disabled={loading}
+              disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="field-messages">
-              {isEmailLimitReached && <span className="limit-msg">Maximum limit reached</span>}
-              {touched.email && errors.email && <span className="error-msg">{errors.email}</span>}
+            <div className="space-y-1">
+              {formik.values.email.length === EMAIL_MAX && (
+                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+              )}
+              {formik.touched.email && formik.errors.email && (
+                <span className="text-[11px] font-medium text-red-600">{formik.errors.email}</span>
+              )}
             </div>
           </div>
 
-          <div className="form-field">
-            <label className="form-label">Password</label>
+          <div className="space-y-2">
+            <label className="block text-[10px] font-semibold uppercase tracking-[0.34em] text-slate-600">Password</label>
             <input
               type="password"
               name="password"
-              className={`form-input ${touched.password && errors.password ? 'input-error' : ''}`}
-              placeholder={`Min. ${PASSWORD_MIN} chars, Max. ${PASSWORD_MAX} chars`}
-              value={formData.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
+              className={`w-full rounded-[16px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 transition duration-200 ease-in-out focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10 focus:outline-none ${formik.touched.password && formik.errors.password ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+              placeholder="Min. 6 chars, Max. 20 chars"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               maxLength={PASSWORD_MAX}
-              disabled={loading}
+              disabled={formik.isSubmitting}
               autoComplete="off"
             />
-            <div className="field-messages">
-              {isPasswordLimitReached && <span className="limit-msg">Maximum limit reached</span>}
-              {touched.password && errors.password && <span className="error-msg">{errors.password}</span>}
+            <div className="space-y-1">
+              {formik.values.password.length === PASSWORD_MAX && (
+                <span className="text-[11px] font-medium text-red-600">Maximum limit reached</span>
+              )}
+              {formik.touched.password && formik.errors.password && (
+                <span className="text-[11px] font-medium text-red-600">{formik.errors.password}</span>
+              )}
             </div>
           </div>
 
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Account'}
+          <button
+            type="submit"
+            className={`w-full rounded-[16px] bg-slate-950 py-3.5 text-sm font-semibold uppercase text-white transition duration-200 ease-in-out ${formik.isSubmitting ? 'cursor-wait opacity-80' : 'hover:bg-slate-800'} disabled:bg-slate-400 disabled:cursor-not-allowed`}
+            disabled={formik.isSubmitting}
+          >
+            {formik.isSubmitting ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="auth-footer">
-          Already have an account? <Link to="/login">Sign in</Link>
+        <div className="text-center mt-6 text-sm text-slate-500">
+          Already have an account? <Link to="/login" className="font-semibold text-slate-950 hover:text-slate-700">Sign in</Link>
         </div>
       </div>
     </div>

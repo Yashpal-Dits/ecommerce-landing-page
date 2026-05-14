@@ -13,7 +13,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
     
     setCurrentUser(null);
     addToast('Logged out successfully!', 'success');
-    navigate('/');
+    navigate('/login');
   };
 
   
@@ -40,6 +40,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
           <Link className="navbar__link" to="/contact">
             Contact
           </Link>
+        
 
         
           {!isAuthPage && (
@@ -52,7 +53,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
                   className="navbar__logout-btn" 
                   onClick={handleLogout}
                 >
-                  Logout
+                  log out
                 </button>
               </>
             ) : (

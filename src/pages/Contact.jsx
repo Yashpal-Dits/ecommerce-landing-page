@@ -16,7 +16,7 @@ export default function Contact({ addToast }) {
 
         email: Yup.string()
             .required('email is required')
-            .email('Invalid  email format')
+            .matches(/^[^\s@]+@[^\s@]+.[^\s@]+$/, 'Invalid email format ')
             .max(50, 'Email must  not  exceed 50 characters'),
 
         phone: Yup.string()

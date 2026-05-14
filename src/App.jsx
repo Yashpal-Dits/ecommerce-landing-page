@@ -3,13 +3,14 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import ToastContainer from "./components/Toast/ToastContainer";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Home from "./pages/Home";
 import Sneakers from "./pages/Sneakers";
 import Streetwear from "./pages/Streetwear";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Contact from "./pages/Contact";
+
 const products = [
   {
     id: 1,
@@ -75,9 +76,8 @@ export default function App() {
   const [toasts, setToasts] = useState([]);
   const featuredProducts = useMemo(() => products, []);
 
-  // Check if user is logged in on app load
   useEffect(() => {
-    const user = localStorage.getItem('currentUser');
+    const user = localStorage.getItem("currentUser");
     if (user) {
       setCurrentUser(JSON.parse(user));
     }
@@ -85,7 +85,7 @@ export default function App() {
 
   const handleAddToCart = () => setCartCount((count) => count + 1);
 
-  const addToast = (message, type = 'success') => {
+  const addToast = (message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
   };
@@ -96,30 +96,59 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Navbar 
-        cartCount={cartCount} 
-        currentUser={currentUser} 
+      <Navbar
+        cartCount={cartCount}
+        currentUser={currentUser}
         setCurrentUser={setCurrentUser}
         addToast={addToast}
       />
-      
+
       <Routes>
-       
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute addToast={addToast}>
               <Home products={featuredProducts} onAddToCart={handleAddToCart} />
             </ProtectedRoute>
-          } 
+          }
         />
-        
-        
-        <Route path="/sneakers" element={<Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />} />
-        <Route path="/streetwear" element={<Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />} />
-        <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
-        <Route path="/register" element={<Register addToast={addToast} />} />
-        <Route path="/contact" element={<Contact addToast={addToast} />} />
+
+        <Route
+          path="/sneakers"
+          element={
+            <ProtectedRoute addToast={addToast}>
+              <Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/streetwear"
+          element={
+            <ProtectedRoute addToast={addToast}>
+              <Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/contact"
+          element={
+            <ProtectedRoute addToast={addToast}>
+              <Contact addToast={addToast} />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/login"
+          element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register addToast={addToast} />}
+        />
       </Routes>
 
       <Footer />
