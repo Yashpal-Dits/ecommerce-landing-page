@@ -19,41 +19,64 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-
-@theme{
-  --animate-fade-in: fadeIn 0.3s ease-in-out;
-  --animate-slide-down: slideDown 0.3s ease-in-out;
-}
-
-
-@layer base {
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: var(--white);
-    color: var(--black);
-    line-height: 1.5;
-    padding-top: var(--nav-height);
+@keyframes slideIn {
+  from { 
+    transform: translateX(110%); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateX(0); 
+    opacity: 1; 
   }
 }
 
+/* ── Tailwind Theme Configuration (v4) ── */
+@theme {
+  --animate-fade-in: fadeIn 0.3s ease-in-out;
+  --animate-slide-down: slideDown 0.3s ease-in-out;
+  --animate-slide-in: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Brand Colors mapping if needed */
+  --color-brand-black: var(--black);
+  --color-brand-gray: var(--gray);
+}
 
+/* ── Base Styles ── */
+@layer base {
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--white);
+    color: var(--black);
+    line-height: 1.5;
+    padding-top: var(--nav-height); /* Offset for sticky navbar */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ── Custom Utilities ── */
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 
- 
   .animate-fade-in {
     animation: fadeIn 0.3s ease-in-out;
   }
+  
   .animate-slide-down {
     animation: slideDown 0.3s ease-in-out;
   }
+  
+  .animate-slide-in {
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 
-  /* Focus shadow utilities */
+  /* Focus shadow utilities for forms */
   .focus-shadow-default:focus {
     box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
   }
+  
   .focus-shadow-error:focus {
     box-shadow: 0 0 0 3px rgba(255, 62, 62, 0.1);
   }
