@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
-export default function ProtectedRoute({ children, addToast }) {
+export default function ProtectedRoute({ children, addToast, allowedRoles }) {
   const [authState, setAuthState] = useState('checking');
+  const [userRole, setUserRole] = useState(null);
   const hasChecked = useRef(false); 
   useEffect(() => {
   
@@ -9,11 +10,27 @@ export default function ProtectedRoute({ children, addToast }) {
     hasChecked.current = true;
     const verifySession = async () => {
       const accessToken = localStorage.getItem('accessToken');
+      const currentUser = localStorage.getItem('currentUser');
+      
       if (!accessToken) {
         setAuthState('invalid');
         addToast?.('Please login to access this page.', 'error');
         return;
       }
+
+      // Check role if allowedRoles is specified
+      if (allowedRoles && currentUser) {
+        const user = JSON.parse(currentUser);
+        const userRole = user.role || 'customer';
+        setUserRole(userRole);
+        
+        if (!allowedRoles.includes(userRole)) {
+          setAuthState('forbidden');
+          addToast?.('You do not have permission to access this page.', 'error');
+          return;
+        }
+      }
+
       try {
         const res = await fetch('https://dummyjson.com/user/me', {
           method: 'GET',
@@ -44,7 +61,7 @@ export default function ProtectedRoute({ children, addToast }) {
       </div>
     );
   }
-  if (authState === 'invalid') {
+  if (authState === 'invalid' || authState === 'forbidden') {
     return <Navigate to="/login" replace />;
   }
   return children;

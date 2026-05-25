@@ -5,7 +5,19 @@ import Categories from "../components/Categories/Categories";
 import ProductGrid from "../components/ProductGrid/ProductGrid";
 import Testimonials from "../components/Testimonials/Testimonials";
 import MemberSection from "../components/MemberSection/MemberSection";
-import { Skeleton } from "../components/ui/Skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
+
+function SkeletonDemo() {
+  return (
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  );
+}
 
 export default function Home({ products, onAddToCart }) {
   const [loading, setLoading] = useState(true);
@@ -24,6 +36,9 @@ export default function Home({ products, onAddToCart }) {
 
         {/* Hero Skeleton */}
         <Skeleton className="h-[400px] w-full rounded-2xl" />
+
+        {/* Demo Skeleton */}
+        <SkeletonDemo />
 
         {/* Categories Skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

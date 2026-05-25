@@ -1,9 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import ToastContainer from "./components/Toast/ToastContainer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import CustomerLayout from "./components/Layouts/CustomerLayout";
+import AdminLayout from "./components/Layouts/AdminLayout";
+import SuperAdminLayout from "./components/Layouts/SuperAdminLayout";
 import Home from "./pages/Home";
 import Sneakers from "./pages/Sneakers";
 import Streetwear from "./pages/Streetwear";
@@ -94,65 +97,253 @@ export default function App() {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   };
 
+  const getLayoutComponent = () => {
+    const userRole = currentUser?.role || 'customer';
+    
+    if (userRole === 'admin') {
+      return AdminLayout;
+    } else if (userRole === 'super_admin') {
+      return SuperAdminLayout;
+    }
+    return CustomerLayout;
+  };
+
+  const LayoutComponent = getLayoutComponent();
+
+  // Determine if user is admin or super_admin
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
+
   return (
     <BrowserRouter>
-      <Navbar
-        cartCount={cartCount}
-        currentUser={currentUser}
-        setCurrentUser={setCurrentUser}
-        addToast={addToast}
-      />
+      {!currentUser ? (
+        <>
+          <Navbar
+            cartCount={cartCount}
+            currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
+            addToast={addToast}
+          />
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute addToast={addToast}>
-              <Home products={featuredProducts} onAddToCart={handleAddToCart} />
-            </ProtectedRoute>
-          }
-        />
+          <Routes>
+            <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
+            <Route path="/register" element={<Register addToast={addToast} />} />
+            <Route path="*" element={<Navigate to="/login" />} />
+          </Routes>
 
-        <Route
-          path="/sneakers"
-          element={
-            <ProtectedRoute addToast={addToast}>
-              <Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />
-            </ProtectedRoute>
-          }
-        />
+          <Footer />
+        </>
+      ) : isAdmin ? (
+        // Admin & Super Admin Routes
+        <LayoutComponent
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          addToast={addToast}
+        >
+          <Routes>
+            {/* Admin Routes */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-8 text-gray-900">Dashboard</h1>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <StatCard title="Total Users" value="4534" icon="" color="from-blue-500/20 to-blue-600/20" />
+                      <StatCard title="Total Sales" value="543" icon="" color="from-green-500/20 to-green-600/20" />
+                      <StatCard title="Revenue" value="₹45,890" icon="" color="from-purple-500/20 to-purple-600/20" />
+                      <StatCard title="Active Orders" value="68" icon="" color="from-amber-500/20 to-amber-600/20" />
+                      
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/streetwear"
-          element={
-            <ProtectedRoute addToast={addToast}>
-              <Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Admin Analytics</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">Analytics dashboard coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/contact"
-          element={
-            <ProtectedRoute addToast={addToast}>
-              <Contact addToast={addToast} />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Manage Users</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">User management dashboard coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/login"
-          element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />}
-        />
+            <Route
+              path="/admin/settings"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Admin Settings</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">Settings panel coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/register"
-          element={<Register addToast={addToast} />}
-        />
-      </Routes>
+            {/* Super Admin Routes */}
+            <Route
+              path="/super-admin/dashboard"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-8 text-gray-900">System Dashboard</h1>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <StatCard title="Total Users" value="234" icon="" color="from-blue-500/20 to-blue-600/20" />
+                      <StatCard title="Total Sales" value="2,543" icon="" color="from-green-500/20 to-green-600/20" />
+                      <StatCard title="Revenue" value="₹67,890" icon="" color="from-purple-500/20 to-purple-600/20" />
+                      <StatCard title="Active Orders" value="228" icon="" color="from-amber-500/20 to-amber-600/20" />
+                      <StatCard title="Manage admins" value="28" icon="" color="from-amber-500/20 to-amber-600/20" />
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-      <Footer />
+            <Route
+              path="/super-admin/analytics"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">System Analytics</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">System analytics dashboard coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/super-admin/users"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">All Users</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">All users management dashboard coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/super-admin/admins"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Manage Admins</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">Admin management dashboard coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/super-admin/settings"
+              element={
+                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
+                  <div>
+                    <h1 className="text-3xl font-bold mb-4 text-gray-900">System Settings</h1>
+                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
+                      <p className="text-gray-600">System settings panel coming soon...</p>
+                    </div>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to={currentUser?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard'} />} />
+          </Routes>
+        </LayoutComponent>
+      ) : (
+        // Customer Routes
+        <LayoutComponent
+          currentUser={currentUser}
+          setCurrentUser={setCurrentUser}
+          addToast={addToast}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute addToast={addToast}>
+                  <Home products={featuredProducts} onAddToCart={handleAddToCart} />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/sneakers"
+              element={
+                <ProtectedRoute addToast={addToast}>
+                  <Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/streetwear"
+              element={
+                <ProtectedRoute addToast={addToast}>
+                  <Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/contact"
+              element={
+                <ProtectedRoute addToast={addToast}>
+                  <Contact addToast={addToast} />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </LayoutComponent>
+      )}
+
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </BrowserRouter>
+  );
+}
+
+// Stat Card Component
+function StatCard({ title, value, icon, color }) {
+  return (
+    <div className={`backdrop-blur-sm bg-gradient-to-br ${color} border border-white/40 rounded-2xl p-6 shadow-md`}>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
+          <p className="text-3xl font-bold text-gray-900">{value}</p>
+        </div>
+        <span className="text-4xl">{icon}</span>
+      </div>
+    </div>
   );
 }

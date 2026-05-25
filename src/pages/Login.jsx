@@ -68,6 +68,7 @@ export default function Login({ setCurrentUser, addToast }) {
           email: localUser.email,
           username: localUser.username,
           image: localUser.image,
+          role: localUser.role || 'customer',
           tokenVerified: true,
         };
         localStorage.setItem('currentUser', JSON.stringify(userData));

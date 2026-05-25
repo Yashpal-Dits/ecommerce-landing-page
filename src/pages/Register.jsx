@@ -16,6 +16,9 @@ const registerSchema = Yup.object({
     .required('Password is required')
     .min(6, 'Password must be at least 6 characters')
     .max(20, 'Password must not exceed 20 characters'),
+  role: Yup.string()
+    .required('Please select a role')
+    .oneOf(['customer', 'admin', 'super_admin'], 'Invalid role selected'),
 });
 
 const NAME_MAX = 50;
@@ -27,7 +30,7 @@ export default function Register({ addToast }) {
   const { getInputClass, getErrorMessage, getMaxLengthWarning } = useFormInput();
 
   const formik = useFormik({
-    initialValues: { name: '', email: '', password: '' },
+    initialValues: { name: '', email: '', password: '', role: 'customer' },
     validationSchema: registerSchema,
     validateOnBlur: true,
     validateOnChange: true,
@@ -51,6 +54,7 @@ export default function Register({ addToast }) {
           username,
           email: values.email,
           password: values.password,
+          role: values.role,
           image: 'https://i.pravatar.cc/150?img=12',
           dummyUsername: 'emilys',
           dummyPassword: 'emilyspass',
@@ -151,6 +155,27 @@ export default function Register({ addToast }) {
             <div className="h-5">
               {getMaxLengthWarning(formik.values.password.length, PASSWORD_MAX)}
               {getErrorMessage(formik.touched.password, formik.errors.password)}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
+              Select Role *
+            </label>
+            <select
+              name="role"
+              className={getInputClass(formik.touched.role, formik.errors.role)}
+              value={formik.values.role}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              disabled={formik.isSubmitting}
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+              <option value="super_admin">Super Admin</option>
+            </select>
+            <div className="h-5">
+              {getErrorMessage(formik.touched.role, formik.errors.role)}
             </div>
           </div>
 
