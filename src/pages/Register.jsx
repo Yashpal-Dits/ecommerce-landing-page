@@ -36,21 +36,34 @@ export default function Register({ addToast }) {
     validateOnChange: true,
     onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
       try {
-        const registeredUsers = JSON.parse(
-          localStorage.getItem('registeredUsers') || '[]'
-        );
-        const emailExists = registeredUsers.some((u) => u.email === values.email);
+        // Split name into first and last name
+        const nameParts = values.name.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ') || '';
+        const username = values.email.split('@')[0];
+
+        // Check if email exists in any storage
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        const admins = JSON.parse(localStorage.getItem('admins') || '[]');
+        const customers = JSON.parse(localStorage.getItem('users') || '[]');
+
+        const emailExists = 
+          registeredUsers.some((u) => u.email === values.email) ||
+          admins.some((a) => a.email === values.email) ||
+          customers.some((c) => c.email === values.email);
+
         if (emailExists) {
           addToast?.('Email already registered. Please login.', 'error');
           setErrors({ submit: 'Email already registered. Please login.' });
           setSubmitting(false);
           return;
         }
-        const username = values.email.split('@')[0];
+
+      
         const newUser = {
           id: Date.now().toString(),
-          firstName: values.name.split(' ')[0],
-          lastName: values.name.split(' ').slice(1).join(' ') || '',
+          firstName,
+          lastName,
           username,
           email: values.email,
           password: values.password,
@@ -58,9 +71,29 @@ export default function Register({ addToast }) {
           image: 'https://i.pravatar.cc/150?img=12',
           dummyUsername: 'emilys',
           dummyPassword: 'emilyspass',
+          createdAt: new Date().toLocaleDateString(),
         };
+
+        
+        if (values.role === 'admin') {
+          
+          admins.push(newUser);
+          localStorage.setItem('admins', JSON.stringify(admins));
+        } else if (values.role === 'super_admin') {
+          
+          const superAdmins = JSON.parse(localStorage.getItem('super_admins') || '[]');
+          superAdmins.push(newUser);
+          localStorage.setItem('super_admins', JSON.stringify(superAdmins));
+        } else {
+          
+          customers.push(newUser);
+          localStorage.setItem('users', JSON.stringify(customers));
+        }
+
+        
         registeredUsers.push(newUser);
         localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+
         addToast?.('Account created successfully! Please login.', 'success');
         resetForm();
         setTimeout(() => navigate('/login'), 1000);
@@ -91,7 +124,6 @@ export default function Register({ addToast }) {
         )}
 
         <form className="space-y-5" onSubmit={formik.handleSubmit} noValidate>
-          
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
               Full Name *

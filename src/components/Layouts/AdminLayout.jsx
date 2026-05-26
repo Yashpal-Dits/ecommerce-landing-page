@@ -1,13 +1,31 @@
-import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function AdminLayout({ children, currentUser, setCurrentUser, addToast }) {
   const navigate = useNavigate();
+  const [impersonatedAdmin, setImpersonatedAdmin] = useState(null);
+
+  useEffect(() => {
+    
+    const impersonated = JSON.parse(localStorage.getItem('impersonatedAdmin'));
+    if (impersonated) {
+      setImpersonatedAdmin(impersonated);
+    }
+  }, []);
+
+  const handleStopImpersonate = () => {
+    localStorage.removeItem('impersonatedAdmin');
+    setImpersonatedAdmin(null);
+    addToast?.('Returned to Super Admin view', 'success');
+    window.location.reload(); 
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('impersonatedAdmin');
     setCurrentUser?.(null);
     addToast?.('Logged out successfully', 'success');
     navigate('/login');
@@ -26,11 +44,26 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
               <span className="px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full shadow-md">
                 ADMIN
               </span>
+              {impersonatedAdmin && (
+                <span className="px-3 py-1 text-xs font-bold text-white bg-blue-600 rounded-full shadow-md flex items-center gap-1">
+                  <FiEye className="w-3 h-3" />
+                  Viewed by Super Admin
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-6">
               <span className="text-sm text-gray-700">
                 <span className="font-semibold text-gray-900">{currentUser?.firstName}</span> (Admin)
               </span>
+              {impersonatedAdmin && (
+                <button
+                  onClick={handleStopImpersonate}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300"
+                >
+                  <FiArrowLeft className="w-4 h-4" />
+                  Back to Super Admin
+                </button>
+              )}
               <button 
                 onClick={handleLogout} 
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300"
@@ -44,12 +77,12 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
       </header>
 
       {/* Main Content Area */}
-      <div className="flex w-full">
+      <div className="flex w-full gap-6 p-6">
         {/* Sidebar Navigation */}
-        <aside className="w-56 p-6">
-          <nav className="space-y-2 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-6 shadow-md">
+        <aside className="w-56 h-fit sticky top-24">
+          <nav className="space-y-2 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-6 shadow-md mb-6">
             <Link
-              to="/"
+              to="/admin/dashboard"
               className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium hover:text-gray-900"
             >
               <FiHome className="w-5 h-5" />
@@ -79,7 +112,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
           </nav>
 
           {/* Admin Badge */}
-          <div className="mt-6 backdrop-blur-sm bg-gradient-to-br from-amber-50/60 to-amber-100/60 border border-amber-200/50 rounded-2xl p-4 shadow-md">
+          <div className="backdrop-blur-sm bg-gradient-to-br from-amber-50/60 to-amber-100/60 border border-amber-200/50 rounded-2xl p-4 shadow-md mb-6">
             <p className="text-xs uppercase font-bold text-amber-900 mb-2">Role</p>
             <p className="text-sm font-semibold text-amber-900 capitalize">
               {currentUser?.role?.replace('_', ' ')}
@@ -89,7 +122,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1">
           <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-8 shadow-md">
             {children}
           </div>

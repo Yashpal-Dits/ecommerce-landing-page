@@ -77,12 +77,18 @@ export default function App() {
   const [cartCount, setCartCount] = useState(0);
   const [currentUser, setCurrentUser] = useState(null);
   const [toasts, setToasts] = useState([]);
+  const [impersonatedAdmin, setImpersonatedAdmin] = useState(null);
   const featuredProducts = useMemo(() => products, []);
 
   useEffect(() => {
     const user = localStorage.getItem("currentUser");
     if (user) {
       setCurrentUser(JSON.parse(user));
+    }
+
+    const impersonated = localStorage.getItem("impersonatedAdmin");
+    if (impersonated) {
+      setImpersonatedAdmin(JSON.parse(impersonated));
     }
   }, []);
 
@@ -100,6 +106,11 @@ export default function App() {
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
     
+  
+    if (impersonatedAdmin && userRole === 'super_admin') {
+      return AdminLayout;
+    }
+    
     if (userRole === 'admin') {
       return AdminLayout;
     } else if (userRole === 'super_admin') {
@@ -109,8 +120,6 @@ export default function App() {
   };
 
   const LayoutComponent = getLayoutComponent();
-
-  // Determine if user is admin or super_admin
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
 
   return (
@@ -133,11 +142,12 @@ export default function App() {
           <Footer />
         </>
       ) : isAdmin ? (
-        // Admin & Super Admin Routes
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
           addToast={addToast}
+          impersonatedAdmin={impersonatedAdmin}
+          setImpersonatedAdmin={setImpersonatedAdmin}
         >
           <Routes>
             {/* Admin Routes */}
@@ -148,11 +158,10 @@ export default function App() {
                   <div>
                     <h1 className="text-3xl font-bold mb-8 text-gray-900">Dashboard</h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <StatCard title="Total Users" value="4534" icon="" color="from-blue-500/20 to-blue-600/20" />
-                      <StatCard title="Total Sales" value="543" icon="" color="from-green-500/20 to-green-600/20" />
-                      <StatCard title="Revenue" value="₹45,890" icon="" color="from-purple-500/20 to-purple-600/20" />
-                      <StatCard title="Active Orders" value="68" icon="" color="from-amber-500/20 to-amber-600/20" />
-                      
+                      <StatCard title="Total Users" value="4534"  color="from-blue-500/20 to-blue-600/20" />
+                      <StatCard title="Total Sales" value="543"  color="from-green-500/20 to-green-600/20" />
+                      <StatCard title="Revenue" value="₹45,890" color="from-purple-500/20 to-purple-600/20" />
+                      <StatCard title="Active Orders" value="68"  color="from-amber-500/20 to-amber-600/20" />
                     </div>
                   </div>
                 </ProtectedRoute>
@@ -209,11 +218,11 @@ export default function App() {
                   <div>
                     <h1 className="text-3xl font-bold mb-8 text-gray-900">System Dashboard</h1>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <StatCard title="Total Users" value="234" icon="" color="from-blue-500/20 to-blue-600/20" />
-                      <StatCard title="Total Sales" value="2,543" icon="" color="from-green-500/20 to-green-600/20" />
-                      <StatCard title="Revenue" value="₹67,890" icon="" color="from-purple-500/20 to-purple-600/20" />
-                      <StatCard title="Active Orders" value="228" icon="" color="from-amber-500/20 to-amber-600/20" />
-                      <StatCard title="Manage admins" value="28" icon="" color="from-amber-500/20 to-amber-600/20" />
+                      <StatCard title="Total Users" value="234" color="from-blue-500/20 to-blue-600/20" />
+                      <StatCard title="Total Sales" value="2,543"  color="from-green-500/20 to-green-600/20" />
+                      <StatCard title="Revenue" value="₹67,890"  color="from-purple-500/20 to-purple-600/20" />
+                      <StatCard title="Active Orders" value="228"  color="from-amber-500/20 to-amber-600/20" />
+                      <StatCard title="Active Admins" value={`${JSON.parse(localStorage.getItem('admins') || '[]').length}`} icon="👨‍💼" color="from-red-500/20 to-red-600/20" />
                     </div>
                   </div>
                 </ProtectedRoute>
@@ -249,20 +258,6 @@ export default function App() {
             />
 
             <Route
-              path="/super-admin/admins"
-              element={
-                <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Manage Admins</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">Admin management dashboard coming soon...</p>
-                    </div>
-                  </div>
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
               path="/super-admin/settings"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
@@ -280,7 +275,6 @@ export default function App() {
           </Routes>
         </LayoutComponent>
       ) : (
-        // Customer Routes
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
@@ -333,7 +327,7 @@ export default function App() {
   );
 }
 
-// Stat Card Component
+
 function StatCard({ title, value, icon, color }) {
   return (
     <div className={`backdrop-blur-sm bg-gradient-to-br ${color} border border-white/40 rounded-2xl p-6 shadow-md`}>
