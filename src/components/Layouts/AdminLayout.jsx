@@ -1,24 +1,57 @@
-import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft } from 'react-icons/fi';
-import { Link, useNavigate } from 'react-router-dom';
+import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft, FiMenu, FiX } from 'react-icons/fi';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-export default function AdminLayout({ children, currentUser, setCurrentUser, addToast }) {
+export const AdminDashboardStats = () => {
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">Dashboard</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="backdrop-blur-sm bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-blue-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Total Users</p>
+          <p className="text-3xl font-bold text-gray-900">4534</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-green-500/20 to-green-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-green-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Total Sales</p>
+          <p className="text-3xl font-bold text-gray-900">543</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-purple-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Revenue</p>
+          <p className="text-3xl font-bold text-gray-900">₹45,890</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-amber-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Active Orders</p>
+          <p className="text-3xl font-bold text-gray-900">68</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function AdminLayout({ children, currentUser, setCurrentUser, addToast, impersonatedAdmin: impersonatedAdminProp, setImpersonatedAdmin }) {
   const navigate = useNavigate();
-  const [impersonatedAdmin, setImpersonatedAdmin] = useState(null);
+  const location = useLocation();
+  const [impersonatedAdmin, setImpersonatedAdminLocal] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    
     const impersonated = JSON.parse(localStorage.getItem('impersonatedAdmin'));
     if (impersonated) {
-      setImpersonatedAdmin(impersonated);
+      setImpersonatedAdminLocal(impersonated);
     }
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const handleStopImpersonate = () => {
     localStorage.removeItem('impersonatedAdmin');
-    setImpersonatedAdmin(null);
+    setImpersonatedAdminLocal(null);
+    setImpersonatedAdmin?.(null);
     addToast?.('Returned to Super Admin view', 'success');
-    window.location.reload(); 
+    navigate('/super-admin/dashboard');
   };
 
   const handleLogout = () => {
@@ -31,42 +64,110 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
     navigate('/login');
   };
 
+  const navItems = [
+    { to: '/admin/dashboard', icon: FiHome, label: 'Dashboard' },
+    { to: '/admin/analytics', icon: FiBarChart2, label: 'Analytics' },
+    { to: '/admin/users', icon: FiUsers, label: 'Users' },
+    { to: '/admin/settings', icon: FiSettings, label: 'Settings' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-16">
       {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-white/80 border-b border-gray-200/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/90 border-b border-gray-200/60 shadow-sm shadow-black/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Left Section */}
             <div className="flex items-center gap-3">
-              <Link to="/" className="font-bold text-xl text-gray-900">
-                GENZ.STORE
+              <Link to="/admin/dashboard" className="font-bold text-xl">
+                <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">GENZ.STORE</span>
               </Link>
-              <span className="px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full shadow-md">
+              <span className="hidden sm:inline-flex px-2.5 py-1 text-xs font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-full shadow-sm">
                 ADMIN
               </span>
               {impersonatedAdmin && (
-                <span className="px-3 py-1 text-xs font-bold text-white bg-blue-600 rounded-full shadow-md flex items-center gap-1">
+                <span className="hidden sm:inline-flex px-2.5 py-1 text-xs font-bold text-white bg-blue-600 rounded-full shadow-sm items-center gap-1">
                   <FiEye className="w-3 h-3" />
-                  Viewed by Super Admin
+                  Viewing as {impersonatedAdmin.firstName}
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-6">
-              <span className="text-sm text-gray-700">
-                <span className="font-semibold text-gray-900">{currentUser?.firstName}</span> (Admin)
-              </span>
+
+            {/* Desktop Right Section */}
+            <div className="hidden md:flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                  <span className="text-xs font-bold text-white">{currentUser?.firstName?.charAt(0)}</span>
+                </div>
+                <span className="text-sm font-medium text-gray-700">{currentUser?.firstName}</span>
+              </div>
               {impersonatedAdmin && (
                 <button
                   onClick={handleStopImpersonate}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-all duration-300"
+                  className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 rounded-lg hover:bg-blue-100 transition-all duration-200"
+                >
+                  <FiArrowLeft className="w-3.5 h-3.5" />
+                  Back to Super Admin
+                </button>
+              )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 hover:shadow-md transition-all duration-200"
+              >
+                <FiLogOut className="w-3.5 h-3.5" />
+                Logout
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            >
+              {mobileMenuOpen ? <FiX className="w-5 h-5" /> : <FiMenu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Dropdown Menu */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="bg-white border-t border-gray-100 px-4 py-3 space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    location.pathname === item.to
+                      ? 'text-amber-700 bg-amber-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
+            <div className="pt-2 border-t border-gray-100 mt-2 space-y-2">
+              <div className="flex items-center gap-3 px-4 py-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                  <span className="text-sm font-bold text-white">{currentUser?.firstName?.charAt(0)}</span>
+                </div>
+                <span className="text-sm font-semibold text-gray-800">{currentUser?.firstName}</span>
+              </div>
+              {impersonatedAdmin && (
+                <button
+                  onClick={handleStopImpersonate}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200/60 rounded-lg hover:bg-blue-100 transition-all"
                 >
                   <FiArrowLeft className="w-4 h-4" />
                   Back to Super Admin
                 </button>
               )}
-              <button 
-                onClick={handleLogout} 
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg hover:shadow-lg hover:shadow-amber-500/30 transition-all duration-300"
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-all"
               >
                 <FiLogOut className="w-4 h-4" />
                 Logout
@@ -77,38 +178,27 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
       </header>
 
       {/* Main Content Area */}
-      <div className="flex w-full gap-6 p-6">
-        {/* Sidebar Navigation */}
-        <aside className="w-56 h-fit sticky top-24">
-          <nav className="space-y-2 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-6 shadow-md mb-6">
-            <Link
-              to="/admin/dashboard"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium hover:text-gray-900"
-            >
-              <FiHome className="w-5 h-5" />
-              <span>Dashboard</span>
-            </Link>
-            <Link
-              to="/admin/analytics"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium hover:text-gray-900"
-            >
-              <FiBarChart2 className="w-5 h-5" />
-              <span>Analytics</span>
-            </Link>
-            <Link
-              to="/admin/users"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium hover:text-gray-900"
-            >
-              <FiUsers className="w-5 h-5" />
-              <span>Users</span>
-            </Link>
-            <Link
-              to="/admin/settings"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium hover:text-gray-900"
-            >
-              <FiSettings className="w-5 h-5" />
-              <span>Settings</span>
-            </Link>
+      <div className="flex w-full gap-6 p-4 sm:p-6">
+        {/* Sidebar Navigation — Desktop only */}
+        <aside className="hidden md:block w-56 h-fit sticky top-16 flex-shrink-0">
+          <nav className="space-y-1 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md mb-6">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium ${
+                    location.pathname === item.to
+                      ? 'text-amber-700 bg-amber-50 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-amber-50/50'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Admin Badge */}
@@ -122,8 +212,8 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1">
-          <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-8 shadow-md">
+        <main className="flex-1 min-w-0">
+          <div className="max-w-7xl mx-auto backdrop-blur-sm bg-white/80 border border-white/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 shadow-xl shadow-slate-200/40 transition-all duration-300">
             {children}
           </div>
         </main>

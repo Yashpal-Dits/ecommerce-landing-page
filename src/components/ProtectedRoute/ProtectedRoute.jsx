@@ -11,6 +11,7 @@ export default function ProtectedRoute({ children, addToast, allowedRoles }) {
     const verifySession = async () => {
       const accessToken = localStorage.getItem('accessToken');
       const currentUser = localStorage.getItem('currentUser');
+      const impersonatedAdmin = localStorage.getItem('impersonatedAdmin');
       
       if (!accessToken) {
         setAuthState('invalid');
@@ -24,7 +25,12 @@ export default function ProtectedRoute({ children, addToast, allowedRoles }) {
         const userRole = user.role || 'customer';
         setUserRole(userRole);
         
-        if (!allowedRoles.includes(userRole)) {
+        // During impersonation, super_admin should be able to access admin routes
+        const effectiveRole = (impersonatedAdmin && userRole === 'super_admin') 
+          ? 'admin' 
+          : userRole;
+        
+        if (!allowedRoles.includes(userRole) && !allowedRoles.includes(effectiveRole)) {
           setAuthState('forbidden');
           addToast?.('You do not have permission to access this page.', 'error');
           return;
@@ -44,6 +50,11 @@ export default function ProtectedRoute({ children, addToast, allowedRoles }) {
           throw new Error('Token invalid');
         }
       } catch (err) {
+        // If impersonating, don't destroy the session — the super admin is still logged in
+        if (impersonatedAdmin && currentUser) {
+          setAuthState('valid');
+          return;
+        }
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('currentUser');

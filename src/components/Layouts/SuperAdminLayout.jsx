@@ -2,6 +2,38 @@ import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLock, FiLogOut, FiEye, FiAr
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
+export const SuperAdminDashboardStats = () => {
+  const adminsCount = JSON.parse(localStorage.getItem('admins') || '[]').length;
+  
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">System Dashboard</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="backdrop-blur-sm bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-blue-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Total Users</p>
+          <p className="text-3xl font-bold text-gray-900">234</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-green-500/20 to-green-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-green-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Total Sales</p>
+          <p className="text-3xl font-bold text-gray-900">2,543</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-purple-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Revenue</p>
+          <p className="text-3xl font-bold text-gray-900">₹67,890</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-amber-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Active Orders</p>
+          <p className="text-3xl font-bold text-gray-900">228</p>
+        </div>
+        <div className="backdrop-blur-sm bg-gradient-to-br from-red-500/20 to-red-600/20 border border-white/40 rounded-3xl p-6 shadow-lg shadow-red-100/40">
+          <p className="text-sm font-medium text-gray-600 mb-2">Active Admins</p>
+          <p className="text-3xl font-bold text-gray-900">{adminsCount}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function SuperAdminLayout({ children, currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin }) {
   const navigate = useNavigate();
   const [admins, setAdmins] = useState([]);
@@ -24,14 +56,13 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
     setImpersonatedAdmin?.(admin);
     addToast?.(`Viewing as ${admin.firstName} ${admin.lastName}`, 'info');
     navigate('/admin/dashboard');
-    window.location.reload(); 
   };
 
   const handleStopImpersonate = () => {
     localStorage.removeItem('impersonatedAdmin');
     setImpersonatedAdmin?.(null);
     addToast?.('Stopped impersonating', 'success');
-    window.location.reload(); 
+    navigate('/super-admin/dashboard');
   };
 
   const handleLogout = () => {
@@ -45,9 +76,9 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-20">
       {/* Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-gradient-to-r from-purple-700 to-purple-900 border-b border-purple-500/30 shadow-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-gradient-to-r from-purple-700 to-purple-900 border-b border-purple-500/30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -202,8 +233,8 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1">
-          <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-8 shadow-md">
+        <main className="flex-1 min-w-0">
+          <div className="max-w-7xl mx-auto backdrop-blur-sm bg-white/80 border border-white/50 rounded-[2rem] p-8 shadow-xl shadow-slate-200/40 transition-all duration-300">
             {children}
           </div>
         </main>

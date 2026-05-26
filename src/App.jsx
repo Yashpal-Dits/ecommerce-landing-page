@@ -5,8 +5,8 @@ import Footer from "./components/Footer/Footer";
 import ToastContainer from "./components/Toast/ToastContainer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import CustomerLayout from "./components/Layouts/CustomerLayout";
-import AdminLayout from "./components/Layouts/AdminLayout";
-import SuperAdminLayout from "./components/Layouts/SuperAdminLayout";
+import AdminLayout, { AdminDashboardStats } from "./components/Layouts/AdminLayout";
+import SuperAdminLayout, { SuperAdminDashboardStats } from "./components/Layouts/SuperAdminLayout";
 import Home from "./pages/Home";
 import Sneakers from "./pages/Sneakers";
 import Streetwear from "./pages/Streetwear";
@@ -155,15 +155,7 @@ export default function App() {
               path="/admin/dashboard"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-8 text-gray-900">Dashboard</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <StatCard title="Total Users" value="4534"  color="from-blue-500/20 to-blue-600/20" />
-                      <StatCard title="Total Sales" value="543"  color="from-green-500/20 to-green-600/20" />
-                      <StatCard title="Revenue" value="₹45,890" color="from-purple-500/20 to-purple-600/20" />
-                      <StatCard title="Active Orders" value="68"  color="from-amber-500/20 to-amber-600/20" />
-                    </div>
-                  </div>
+                  <AdminDashboardStats />
                 </ProtectedRoute>
               }
             />
@@ -215,16 +207,7 @@ export default function App() {
               path="/super-admin/dashboard"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-8 text-gray-900">System Dashboard</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                      <StatCard title="Total Users" value="234" color="from-blue-500/20 to-blue-600/20" />
-                      <StatCard title="Total Sales" value="2,543"  color="from-green-500/20 to-green-600/20" />
-                      <StatCard title="Revenue" value="₹67,890"  color="from-purple-500/20 to-purple-600/20" />
-                      <StatCard title="Active Orders" value="228"  color="from-amber-500/20 to-amber-600/20" />
-                      <StatCard title="Active Admins" value={`${JSON.parse(localStorage.getItem('admins') || '[]').length}`} icon="👨‍💼" color="from-red-500/20 to-red-600/20" />
-                    </div>
-                  </div>
+                  <SuperAdminDashboardStats />
                 </ProtectedRoute>
               }
             />
@@ -271,7 +254,7 @@ export default function App() {
               }
             />
 
-            <Route path="*" element={<Navigate to={currentUser?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard'} />} />
+           <Route path="*" element={<Navigate to={impersonatedAdmin ? '/admin/dashboard' : (currentUser?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard')} />} />
           </Routes>
         </LayoutComponent>
       ) : (
@@ -328,16 +311,3 @@ export default function App() {
 }
 
 
-function StatCard({ title, value, icon, color }) {
-  return (
-    <div className={`backdrop-blur-sm bg-gradient-to-br ${color} border border-white/40 rounded-2xl p-6 shadow-md`}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
-          <p className="text-3xl font-bold text-gray-900">{value}</p>
-        </div>
-        <span className="text-4xl">{icon}</span>
-      </div>
-    </div>
-  );
-}
