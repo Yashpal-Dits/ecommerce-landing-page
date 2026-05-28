@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
+
+
 export default function ProtectedRoute({ children, addToast, allowedRoles }) {
   const [authState, setAuthState] = useState('checking');
   const [userRole, setUserRole] = useState(null);

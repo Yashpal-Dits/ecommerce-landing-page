@@ -1,18 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Navbar from "./components/Navbar/Navbar";
-import Footer from "./components/Footer/Footer";
 import ToastContainer from "./components/Toast/ToastContainer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import CustomerLayout from "./components/Layouts/CustomerLayout";
 import AdminLayout, { AdminDashboardStats } from "./components/Layouts/AdminLayout";
 import SuperAdminLayout, { SuperAdminDashboardStats } from "./components/Layouts/SuperAdminLayout";
-import Home from "./pages/Home";
-import Sneakers from "./pages/Sneakers";
-import Streetwear from "./pages/Streetwear";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Contact from "./pages/Contact";
+import CustomerRoutes from "./routes/customerRoutes";
 
 const products = [
   {
@@ -106,7 +101,6 @@ export default function App() {
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
     
-  
     if (impersonatedAdmin && userRole === 'super_admin') {
       return AdminLayout;
     }
@@ -125,23 +119,14 @@ export default function App() {
   return (
     <BrowserRouter>
       {!currentUser ? (
-        <>
-          <Navbar
-            cartCount={cartCount}
-            currentUser={currentUser}
-            setCurrentUser={setCurrentUser}
-            addToast={addToast}
-          />
-
-          <Routes>
-            <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
-            <Route path="/register" element={<Register addToast={addToast} />} />
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-
-          <Footer />
-        </>
+        // ========== PUBLIC ROUTES (Not Authenticated) ==========
+        <Routes>
+          <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
+          <Route path="/register" element={<Register addToast={addToast} />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
       ) : isAdmin ? (
+        // ========== ADMIN & SUPER ADMIN ROUTES ==========
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
@@ -150,7 +135,7 @@ export default function App() {
           setImpersonatedAdmin={setImpersonatedAdmin}
         >
           <Routes>
-            {/* Admin Routes */}
+            {/* ===== Admin Routes ===== */}
             <Route
               path="/admin/dashboard"
               element={
@@ -202,7 +187,7 @@ export default function App() {
               }
             />
 
-            {/* Super Admin Routes */}
+            // Super Admin Routes 
             <Route
               path="/super-admin/dashboard"
               element={
@@ -254,60 +239,40 @@ export default function App() {
               }
             />
 
-           <Route path="*" element={<Navigate to={impersonatedAdmin ? '/admin/dashboard' : (currentUser?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard')} />} />
+            {/* Default redirect for admin users */}
+            <Route 
+              path="*" 
+              element={
+                <Navigate 
+                  to={
+                    impersonatedAdmin 
+                      ? '/admin/dashboard' 
+                      : (currentUser?.role === 'super_admin' ? '/super-admin/dashboard' : '/admin/dashboard')
+                  } 
+                  replace 
+                />
+              } 
+            />
           </Routes>
         </LayoutComponent>
       ) : (
+
+        //     Customer Nested Routes
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
           addToast={addToast}
         >
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute addToast={addToast}>
-                  <Home products={featuredProducts} onAddToCart={handleAddToCart} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/sneakers"
-              element={
-                <ProtectedRoute addToast={addToast}>
-                  <Sneakers products={featuredProducts} onAddToCart={handleAddToCart} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/streetwear"
-              element={
-                <ProtectedRoute addToast={addToast}>
-                  <Streetwear products={featuredProducts} onAddToCart={handleAddToCart} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/contact"
-              element={
-                <ProtectedRoute addToast={addToast}>
-                  <Contact addToast={addToast} />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+          <CustomerRoutes 
+            products={featuredProducts} 
+            onAddToCart={handleAddToCart} 
+            addToast={addToast} 
+          />
         </LayoutComponent>
       )}
 
+      {/* Toast Notifications - Global */}
       <ToastContainer toasts={toasts} removeToast={removeToast} />
     </BrowserRouter>
   );
 }
-
-

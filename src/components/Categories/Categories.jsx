@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 const categories = ["Streetwear", "Sneakers", "Oversized", "Ethnic Fusion", "Accessories", "Denim"];
+
+
 export default function Categories() {
   const getCategoryLink = (category) => {
     const links = {

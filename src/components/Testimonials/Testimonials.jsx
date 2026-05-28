@@ -15,6 +15,7 @@ const testimonials = [
     role: "Stylist",
   },
 ];
+
 export default function Testimonials() {
   return (
     <section className="py-16 md:py-20 bg-black text-white" id="testimonials">

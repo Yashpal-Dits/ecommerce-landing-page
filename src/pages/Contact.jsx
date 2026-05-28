@@ -1,6 +1,8 @@
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
+
+
 export default function Contact({ addToast }) {
   const navigate = useNavigate();
   const validationSchema = Yup.object({
@@ -21,6 +23,8 @@ export default function Contact({ addToast }) {
       .min(10, 'Message must be at least 10 characters')
       .max(500, 'Message must not exceed 500 characters')
   });
+
+
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -38,6 +42,8 @@ export default function Contact({ addToast }) {
       }, 2000);
     },
   });
+
+  
   const inputBaseClass = "w-full px-4 py-3 border-2 border-gray-200 rounded-md text-[15px] outline-none transition-all duration-200 focus:border-black resize-none";
   const errorInputClass = "border-red-500 focus:border-red-500 bg-red-50/30";
   return (

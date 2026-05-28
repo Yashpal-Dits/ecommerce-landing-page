@@ -3,39 +3,37 @@ const inrCurrency = new Intl.NumberFormat("en-IN", {
   currency: "INR",
   maximumFractionDigits: 0,
 });
+
 export default function ProductCard({ product, onAddToCart }) {
   return (
     <article className="flex flex-col bg-white transition-transform duration-300 ease-in-out hover:-translate-y-1">
-   
+     
       <div className="w-full aspect-video sm:aspect-square md:aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden mb-4">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105 hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 ease-in-out hover:scale-105"
           loading="lazy"
         />
       </div>
 
       
       <div className="flex flex-col gap-1">
-
-      
+       
         <p className="text-xs md:text-xs uppercase text-gray-500 font-semibold tracking-wide">
           {product.category}
         </p>
 
-       
         <h3 className="text-sm md:text-base font-black text-black leading-snug">
           {product.name}
         </h3>
 
-     
+        
         <div className="flex justify-between items-center mt-2.5">
-
           <p className="text-sm md:text-base font-black text-black">
             {inrCurrency.format(product.price)}
           </p>
-     
+
           <button
             type="button"
             onClick={() => onAddToCart(product)}

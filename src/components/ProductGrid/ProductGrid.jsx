@@ -1,4 +1,6 @@
 import ProductCard from "../ProductCard/ProductCard";
+
+
 export default function ProductGrid({ products, onAddToCart }) {
   return (
     <section className="py-14 md:py-16 lg:py-20 bg-white" id="products">

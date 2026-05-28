@@ -41,7 +41,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
     }
   }, []);
 
-  // Close mobile menu on route change
+  
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
@@ -73,11 +73,11 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-16">
-      {/* Header */}
+   
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/90 border-b border-gray-200/60 shadow-sm shadow-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Left Section */}
+         
             <div className="flex items-center gap-3">
               <Link to="/admin/dashboard" className="font-bold text-xl">
                 <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">GENZ.STORE</span>
@@ -93,7 +93,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
               )}
             </div>
 
-            {/* Desktop Right Section */}
+       
             <div className="hidden md:flex items-center gap-3">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
@@ -119,7 +119,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
               </button>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 transition-all duration-200"
@@ -129,7 +128,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+      
         <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="bg-white border-t border-gray-100 px-4 py-3 space-y-1">
             {navItems.map((item) => {
@@ -177,9 +176,9 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
         </div>
       </header>
 
-      {/* Main Content Area */}
       <div className="flex w-full gap-6 p-4 sm:p-6">
-        {/* Sidebar Navigation — Desktop only */}
+  
+
         <aside className="hidden md:block w-56 h-fit sticky top-16 flex-shrink-0">
           <nav className="space-y-1 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md mb-6">
             {navItems.map((item) => {
@@ -201,7 +200,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
             })}
           </nav>
 
-          {/* Admin Badge */}
+     
           <div className="backdrop-blur-sm bg-gradient-to-br from-amber-50/60 to-amber-100/60 border border-amber-200/50 rounded-2xl p-4 shadow-md mb-6">
             <p className="text-xs uppercase font-bold text-amber-900 mb-2">Role</p>
             <p className="text-sm font-semibold text-amber-900 capitalize">
@@ -211,7 +210,7 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
           </div>
         </aside>
 
-        {/* Main Content */}
+
         <main className="flex-1 min-w-0">
           <div className="max-w-7xl mx-auto backdrop-blur-sm bg-white/80 border border-white/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 shadow-xl shadow-slate-200/40 transition-all duration-300">
             {children}

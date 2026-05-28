@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function Sneakers() {
+export default function Trending() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-white">
       <div className="text-center px-4">
@@ -10,7 +10,7 @@ export default function Sneakers() {
         </h1>
 
         <p className="text-gray-600 text-lg md:text-xl mb-3 max-w-md mx-auto">
-          Something amazing is in the works. Stay tuned for our sneakers collection!
+          Something amazing is in the works. Stay tuned for our trending collection!
         </p>
         <Link
           to="/categories"

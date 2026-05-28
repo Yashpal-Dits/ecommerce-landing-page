@@ -126,7 +126,7 @@ export default function Register({ addToast }) {
         <form className="space-y-5" onSubmit={formik.handleSubmit} noValidate>
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Full Name *
+              Full Name * (required)
             </label>
             <input
               type="text"
@@ -148,7 +148,7 @@ export default function Register({ addToast }) {
 
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Email Address *
+              Email Address * (required)
             </label>
             <input
               type="email"
@@ -170,7 +170,7 @@ export default function Register({ addToast }) {
 
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Password *
+              Password * (required)
             </label>
             <input
               type="password"
@@ -192,7 +192,7 @@ export default function Register({ addToast }) {
 
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Select Role *
+              Select Role * (required)
             </label>
             <select
               name="role"

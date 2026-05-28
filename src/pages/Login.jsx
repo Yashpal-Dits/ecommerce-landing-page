@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+
 const loginSchema = Yup.object({
   email: Yup.string()
     .required('Email is required')
@@ -10,6 +11,7 @@ const loginSchema = Yup.object({
     .required('Password is required')
     .max(20, 'Password must not exceed 20 characters'),
 });
+
 export default function Login({ setCurrentUser, addToast }) {
   const navigate = useNavigate();
   const formik = useFormik({
@@ -118,7 +120,7 @@ export default function Login({ setCurrentUser, addToast }) {
 
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Email Address *
+              Email Address * (required)
             </label>
             <input
               type="email"
@@ -148,7 +150,7 @@ export default function Login({ setCurrentUser, addToast }) {
 
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
-              Password *
+              Password * (required)
             </label>
             <input
               type="password"

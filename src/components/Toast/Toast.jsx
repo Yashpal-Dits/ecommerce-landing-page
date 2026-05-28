@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 export default function Toast({ message, type = 'success', onClose }) {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -11,6 +12,7 @@ export default function Toast({ message, type = 'success', onClose }) {
     error: { border: 'border-red-500', iconBg: 'bg-red-500', icon: '✕' },
     info: { border: 'border-blue-500', iconBg: 'bg-blue-500', icon: 'ℹ' }
   };
+
   const config = typeConfigs[type] || typeConfigs.success;
   return (
     <div className={`
