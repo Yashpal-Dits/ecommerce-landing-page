@@ -1,6 +1,7 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft, FiMenu, FiX } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export const AdminDashboardStats = () => {
   return (
@@ -28,29 +29,20 @@ export const AdminDashboardStats = () => {
   );
 };
 
-export default function AdminLayout({ children, currentUser, setCurrentUser, addToast, impersonatedAdmin: impersonatedAdminProp, setImpersonatedAdmin }) {
+const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [impersonatedAdmin, setImpersonatedAdminLocal] = useState(null);
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const impersonated = JSON.parse(localStorage.getItem('impersonatedAdmin'));
-    if (impersonated) {
-      setImpersonatedAdminLocal(impersonated);
-    }
-  }, []);
-
-  
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const handleStopImpersonate = () => {
     localStorage.removeItem('impersonatedAdmin');
-    setImpersonatedAdminLocal(null);
-    setImpersonatedAdmin?.(null);
-    addToast?.('Returned to Super Admin view', 'success');
+    setImpersonatedAdmin(null);
+    addToast('Returned to Super Admin view', 'success');
     navigate('/super-admin/dashboard');
   };
 
@@ -59,8 +51,8 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('impersonatedAdmin');
-    setCurrentUser?.(null);
-    addToast?.('Logged out successfully', 'success');
+    setCurrentUser(null);
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 
@@ -73,11 +65,9 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 pt-16">
-   
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/90 border-b border-gray-200/60 shadow-sm shadow-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-         
             <div className="flex items-center gap-3">
               <Link to="/admin/dashboard" className="font-bold text-xl">
                 <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">GENZ.STORE</span>
@@ -93,7 +83,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
               )}
             </div>
 
-       
             <div className="hidden md:flex items-center gap-3">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
@@ -128,7 +117,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
           </div>
         </div>
 
-      
         <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="bg-white border-t border-gray-100 px-4 py-3 space-y-1">
             {navItems.map((item) => {
@@ -177,8 +165,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
       </header>
 
       <div className="flex w-full gap-6 p-4 sm:p-6">
-  
-
         <aside className="hidden md:block w-56 h-fit sticky top-16 flex-shrink-0">
           <nav className="space-y-1 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md mb-6">
             {navItems.map((item) => {
@@ -200,7 +186,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
             })}
           </nav>
 
-     
           <div className="backdrop-blur-sm bg-gradient-to-br from-amber-50/60 to-amber-100/60 border border-amber-200/50 rounded-2xl p-4 shadow-md mb-6">
             <p className="text-xs uppercase font-bold text-amber-900 mb-2">Role</p>
             <p className="text-sm font-semibold text-amber-900 capitalize">
@@ -210,7 +195,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
           </div>
         </aside>
 
-
         <main className="flex-1 min-w-0">
           <div className="max-w-7xl mx-auto backdrop-blur-sm bg-white/80 border border-white/50 rounded-[2rem] p-4 sm:p-6 lg:p-8 shadow-xl shadow-slate-200/40 transition-all duration-300">
             {children}
@@ -219,4 +203,6 @@ export default function AdminLayout({ children, currentUser, setCurrentUser, add
       </div>
     </div>
   );
-}
+};
+
+export default AdminLayout;

@@ -1,6 +1,7 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLock, FiLogOut, FiEye, FiArrowLeft } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export const SuperAdminDashboardStats = () => {
   const adminsCount = JSON.parse(localStorage.getItem('admins') || '[]').length;
@@ -34,8 +35,9 @@ export const SuperAdminDashboardStats = () => {
   );
 };
 
-export default function SuperAdminLayout({ children, currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin }) {
+const SuperAdminLayout = ({ children }) => {
   const navigate = useNavigate();
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
   const [admins, setAdmins] = useState([]);
 
   useEffect(() => {
@@ -53,15 +55,15 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
 
   const handleImpersonate = (admin) => {
     localStorage.setItem('impersonatedAdmin', JSON.stringify(admin));
-    setImpersonatedAdmin?.(admin);
-    addToast?.(`Viewing as ${admin.firstName} ${admin.lastName}`, 'info');
+    setImpersonatedAdmin(admin);
+    addToast(`Viewing as ${admin.firstName} ${admin.lastName}`, 'info');
     navigate('/admin/dashboard');
   };
 
   const handleStopImpersonate = () => {
     localStorage.removeItem('impersonatedAdmin');
-    setImpersonatedAdmin?.(null);
-    addToast?.('Stopped impersonating', 'success');
+    setImpersonatedAdmin(null);
+    addToast('Stopped impersonating', 'success');
     navigate('/super-admin/dashboard');
   };
 
@@ -70,14 +72,13 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('impersonatedAdmin');
-    setCurrentUser?.(null);
-    addToast?.('Logged out successfully', 'success');
+    setCurrentUser(null);
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-100 pt-20">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-linear-to-r from-purple-700 to-purple-900 border-b border-purple-500/30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -120,9 +121,7 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
         </div>
       </header>
 
-   
       <div className="flex w-full gap-6 p-6">
-     
         <aside className="w-56 h-fit sticky top-24">
           <nav className="space-y-2 backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-6 shadow-md mb-6">
             <Link
@@ -155,7 +154,6 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
             </Link>
           </nav>
 
-          {/* Super Admin Badge */}
           <div className="backdrop-blur-sm bg-linear-to-br from-purple-50/60 to-pink-50/60 border border-purple-200/50 rounded-2xl p-4 shadow-md mb-6">
             <p className="text-xs uppercase font-bold text-purple-900 mb-2">Role</p>
             <p className="text-sm font-semibold text-purple-900 capitalize">
@@ -164,26 +162,6 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
             <p className="text-xs text-purple-700 mt-3"> Complete system access</p>
           </div>
 
-          {/* System Status Card */}
-          <div className="backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md mb-6">
-            <h3 className="text-xs uppercase font-bold text-gray-700 mb-3">System Status</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600">Database</span>
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600">API Server</span>
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-600">Cache</span>
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              </div>
-            </div>
-          </div>
-
-          {/* View Admins Card */}
           <div className="backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md mb-6">
             <h3 className="text-xs uppercase font-bold text-gray-700 mb-3 flex items-center gap-2">
               <FiEye className="w-4 h-4" />
@@ -212,7 +190,6 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
             </div>
           </div>
 
-          {/* Quick Stats Card */}
           <div className="backdrop-blur-sm bg-white/60 border border-white/40 rounded-2xl p-4 shadow-md">
             <h3 className="text-xs uppercase font-bold text-gray-700 mb-3">Quick Stats</h3>
             <div className="space-y-3">
@@ -240,4 +217,6 @@ export default function SuperAdminLayout({ children, currentUser, setCurrentUser
       </div>
     </div>
   );
-}
+};
+
+export default SuperAdminLayout;

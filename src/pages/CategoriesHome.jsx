@@ -1,44 +1,7 @@
 import { Link } from 'react-router-dom';
+import { categoryCards } from '../constants/products';
 
-export default function CategoriesHome() {
-  const categoryCards = [
-    {
-      id: 'sneakers',
-      name: 'Sneakers',
-      description: 'Latest drops and classic kicks',
-      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
-      path: '/categories/sneakers',
-    },
-    {
-      id: 'denim',
-      name: 'Denim',
-      description: 'Premium jeans and denim jackets',
-      image: 'https://unsplash.com/photos/a-pile-of-jeans-laying-on-top-of-each-other-XdXk39Bj3B0',
-      path: '/categories/denim',
-    },
-    {
-      id: 'streetwear',
-      name: 'Streetwear',
-      description: 'Urban fashion essentials',
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80',
-      path: '/categories/streetwear',
-    },
-    {
-      id: 'accessories',
-      name: 'Accessories',
-      description: 'Complete your look',
-      image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=600&q=80',
-      path: '/categories/accessories',
-    },
-    {
-      id: 'outerwear',
-      name: 'Outerwear',
-      description: 'Jackets and coats for all seasons',
-      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80',
-      path: '/categories/outerwear',
-    },
-  ];
-
+const CategoriesHome = () => {
   return (
     <div>
       <div className="mb-8">
@@ -57,7 +20,6 @@ export default function CategoriesHome() {
             to={category.path}
             className="group relative overflow-hidden bg-white transition-transform duration-300 ease-in-out hover:-translate-y-1"
           >
-
             <div className="w-full aspect-square overflow-hidden bg-gray-100 rounded-sm mb-4">
               <img
                 src={category.image}
@@ -86,4 +48,6 @@ export default function CategoriesHome() {
       </div>
     </div>
   );
-}
+};
+
+export default CategoriesHome;

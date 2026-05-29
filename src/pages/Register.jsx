@@ -1,32 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { useFormInput } from '../hooks/useFormInput';
+import { useFormInput }  from "../hooks/useFormInput"
+import { useAuth } from "../context/AuthContext";
+import { registerSchema } from "../validations/schemas";
 
-const registerSchema = Yup.object({
-  name: Yup.string()
-    .required('Full name is required')
-    .min(2, 'Name must be at least 2 characters')
-    .max(50, 'Name must not exceed 50 characters'),
-  email: Yup.string()
-    .required('Email is required')
-    .email('Invalid email format')
-    .max(50, 'Email must not exceed 50 characters'),
-  password: Yup.string()
-    .required('Password is required')
-    .min(6, 'Password must be at least 6 characters')
-    .max(20, 'Password must not exceed 20 characters'),
-  role: Yup.string()
-    .required('Please select a role')
-    .oneOf(['customer', 'admin', 'super_admin'], 'Invalid role selected'),
-});
-
-const NAME_MAX = 50;
-const EMAIL_MAX = 50;
-const PASSWORD_MAX = 20;
-
-export default function Register({ addToast }) {
+const Register = () => {
   const navigate = useNavigate();
+  const { addToast } = useAuth();
   const { getInputClass, getErrorMessage, getMaxLengthWarning } = useFormInput();
 
   const formik = useFormik({
@@ -36,13 +16,11 @@ export default function Register({ addToast }) {
     validateOnChange: true,
     onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
       try {
-        // Split name into first and last name
         const nameParts = values.name.trim().split(' ');
         const firstName = nameParts[0];
         const lastName = nameParts.slice(1).join(' ') || '';
         const username = values.email.split('@')[0];
 
-        // Check if email exists in any storage
         const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
         const admins = JSON.parse(localStorage.getItem('admins') || '[]');
         const customers = JSON.parse(localStorage.getItem('users') || '[]');
@@ -53,13 +31,12 @@ export default function Register({ addToast }) {
           customers.some((c) => c.email === values.email);
 
         if (emailExists) {
-          addToast?.('Email already registered. Please login.', 'error');
+          addToast('Email already registered. Please login.', 'error');
           setErrors({ submit: 'Email already registered. Please login.' });
           setSubmitting(false);
           return;
         }
 
-      
         const newUser = {
           id: Date.now().toString(),
           firstName,
@@ -74,38 +51,37 @@ export default function Register({ addToast }) {
           createdAt: new Date().toLocaleDateString(),
         };
 
-        
         if (values.role === 'admin') {
-          
           admins.push(newUser);
           localStorage.setItem('admins', JSON.stringify(admins));
         } else if (values.role === 'super_admin') {
-          
           const superAdmins = JSON.parse(localStorage.getItem('super_admins') || '[]');
           superAdmins.push(newUser);
           localStorage.setItem('super_admins', JSON.stringify(superAdmins));
         } else {
-          
           customers.push(newUser);
           localStorage.setItem('users', JSON.stringify(customers));
         }
 
-        
         registeredUsers.push(newUser);
         localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
 
-        addToast?.('Account created successfully! Please login.', 'success');
+        addToast('Account created successfully! Please login.', 'success');
         resetForm();
         setTimeout(() => navigate('/login'), 1000);
       } catch (err) {
         console.error('Register error:', err);
         setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
-        addToast?.(err.message || 'Something went wrong. Please try again.', 'error');
+        addToast(err.message || 'Something went wrong. Please try again.', 'error');
       } finally {
         setSubmitting(false);
       }
     },
   });
+
+  const NAME_MAX = 50;
+  const EMAIL_MAX = 50;
+  const PASSWORD_MAX = 20;
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-16 bg-gray-100 md:py-20">
@@ -232,4 +208,6 @@ export default function Register({ addToast }) {
       </div>
     </div>
   );
-}
+};
+
+export default Register;

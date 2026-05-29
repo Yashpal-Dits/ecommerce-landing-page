@@ -1,4 +1,3 @@
-import { useMemo, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ToastContainer from "./components/Toast/ToastContainer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
@@ -8,95 +7,10 @@ import SuperAdminLayout, { SuperAdminDashboardStats } from "./components/Layouts
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CustomerRoutes from "./routes/customerRoutes";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
-const products = [
-  {
-    id: 1,
-    name: "Tokyo Oversized Tee",
-    category: "Streetwear",
-    price: 2199,
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 2,
-    name: "Seoul Cargo Pants",
-    category: "Bottomwear",
-    price: 2899,
-    image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 3,
-    name: "Indie Crop Hoodie",
-    category: "Women",
-    price: 2499,
-    image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 4,
-    name: "Orbit Chunky Sneakers",
-    category: "Sneakers",
-    price: 4999,
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 5,
-    name: "Urban Denim Jacket",
-    category: "Outerwear",
-    price: 3599,
-    image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 6,
-    name: "Monsoon Co-ord Set",
-    category: "Ethnic Fusion",
-    price: 3199,
-    image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 7,
-    name: "Retro Varsity Jacket",
-    category: "Streetwear",
-    price: 4299,
-    image: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 8,
-    name: "Layered Chain + Ring Set",
-    category: "Accessories",
-    price: 1499,
-    image: "https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&w=900&q=80",
-  },
-];
-
-export default function App() {
-  const [cartCount, setCartCount] = useState(0);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [toasts, setToasts] = useState([]);
-  const [impersonatedAdmin, setImpersonatedAdmin] = useState(null);
-  const featuredProducts = useMemo(() => products, []);
-
-  useEffect(() => {
-    const user = localStorage.getItem("currentUser");
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
-
-    const impersonated = localStorage.getItem("impersonatedAdmin");
-    if (impersonated) {
-      setImpersonatedAdmin(JSON.parse(impersonated));
-    }
-  }, []);
-
-  const handleAddToCart = () => setCartCount((count) => count + 1);
-
-  const addToast = (message, type = "success") => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-  };
-
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+const AppRoutes = () => {
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
 
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
@@ -119,14 +33,12 @@ export default function App() {
   return (
     <BrowserRouter>
       {!currentUser ? (
-        // ========== PUBLIC ROUTES (Not Authenticated) ==========
         <Routes>
           <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
           <Route path="/register" element={<Register addToast={addToast} />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       ) : isAdmin ? (
-        // ========== ADMIN & SUPER ADMIN ROUTES ==========
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
@@ -135,7 +47,6 @@ export default function App() {
           setImpersonatedAdmin={setImpersonatedAdmin}
         >
           <Routes>
-            {/* ===== Admin Routes ===== */}
             <Route
               path="/admin/dashboard"
               element={
@@ -187,7 +98,6 @@ export default function App() {
               }
             />
 
-            // Super Admin Routes 
             <Route
               path="/super-admin/dashboard"
               element={
@@ -239,7 +149,6 @@ export default function App() {
               }
             />
 
-            {/* Default redirect for admin users */}
             <Route 
               path="*" 
               element={
@@ -256,23 +165,28 @@ export default function App() {
           </Routes>
         </LayoutComponent>
       ) : (
-
-        //     Customer Nested Routes
         <LayoutComponent
           currentUser={currentUser}
           setCurrentUser={setCurrentUser}
           addToast={addToast}
         >
-          <CustomerRoutes 
-            products={featuredProducts} 
-            onAddToCart={handleAddToCart} 
-            addToast={addToast} 
-          />
+          <CustomerRoutes />
         </LayoutComponent>
       )}
-
-      {/* Toast Notifications - Global */}
-      <ToastContainer toasts={toasts} removeToast={removeToast} />
     </BrowserRouter>
   );
-}
+};
+
+const App = () => (
+  <AuthProvider>
+    <AppRoutes />
+    <ToastContainerWrapper />
+  </AuthProvider>
+);
+
+const ToastContainerWrapper = () => {
+  const { toasts, removeToast } = useAuth();
+  return <ToastContainer toasts={toasts} removeToast={removeToast} />;
+};
+
+export default App;

@@ -1,19 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useAuth } from "../context/AuthContext";
+import { loginSchema } from "../validations/schemas"
 
-const loginSchema = Yup.object({
-  email: Yup.string()
-    .required('Email is required')
-    .email('Invalid email format')
-    .max(50, 'Email must not exceed 50 characters'),
-  password: Yup.string()
-    .required('Password is required')
-    .max(20, 'Password must not exceed 20 characters'),
-});
-
-export default function Login({ setCurrentUser, addToast }) {
+const Login = () => {
   const navigate = useNavigate();
+  const { setCurrentUser, addToast } = useAuth();
+  
   const formik = useFormik({
     initialValues: { email: '', password: '' },
     validationSchema: loginSchema,
@@ -21,24 +14,22 @@ export default function Login({ setCurrentUser, addToast }) {
     validateOnChange: true,
     onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
       try {
-        // ── Local check
         const registeredUsers = JSON.parse(
           localStorage.getItem('registeredUsers') || '[]'
         );
         const localUser = registeredUsers.find((u) => u.email === values.email);
         if (!localUser) {
-          addToast?.('Email not found. Please register first.', 'error');
+          addToast('Email not found. Please register first.', 'error');
           setErrors({ submit: 'Email not found. Please register first.' });
           setSubmitting(false);
           return;
         }
         if (localUser.password !== values.password) {
-          addToast?.('Incorrect password', 'error');
+          addToast('Incorrect password', 'error');
           setErrors({ submit: 'Incorrect password' });
           setSubmitting(false);
           return;
         }
-        // ── Get token from DummyJSON
         const dummyUsername = localUser.dummyUsername || 'emilys';
         const dummyPassword = localUser.dummyPassword || 'emilyspass';
         const tokenRes = await fetch('https://dummyjson.com/auth/login', {
@@ -52,7 +43,6 @@ export default function Login({ setCurrentUser, addToast }) {
         });
         if (!tokenRes.ok) throw new Error('Authentication failed');
         const tokenData = await tokenRes.json();
-        // ── Verify token
         const verifyRes = await fetch('https://dummyjson.com/user/me', {
           method: 'GET',
           headers: { Authorization: `Bearer ${tokenData.accessToken}` },
@@ -60,7 +50,6 @@ export default function Login({ setCurrentUser, addToast }) {
         });
         if (!verifyRes.ok) throw new Error('Token verification failed');
         await verifyRes.json();
-        // ── Save tokens
         localStorage.setItem('accessToken', tokenData.accessToken);
         localStorage.setItem('refreshToken', tokenData.refreshToken);
         const userData = {
@@ -74,34 +63,34 @@ export default function Login({ setCurrentUser, addToast }) {
           tokenVerified: true,
         };
         localStorage.setItem('currentUser', JSON.stringify(userData));
-        setCurrentUser?.(userData);
-        addToast?.(`Welcome back, ${localUser.firstName}!`, 'success');
+        setCurrentUser(userData);
+        addToast(`Welcome back, ${localUser.firstName}!`, 'success');
         resetForm();
         setTimeout(() => navigate('/'), 1000);
       } catch (err) {
         console.error('Login error:', err);
         setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
-        addToast?.(err.message || 'Something went wrong. Please try again.', 'error');
+        addToast(err.message || 'Something went wrong. Please try again.', 'error');
       } finally {
         setSubmitting(false);
       }
     },
   });
+
   const EMAIL_MAX = 50;
   const PASSWORD_MAX = 20;
+
   const inputClass = (touched, error) => {
     const baseClasses = 'w-full px-4 py-3 md:py-4 border-2 rounded text-sm md:text-base bg-white transition-all duration-200 ease-in focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed';
-
     if (touched && error) {
       return `${baseClasses} border-red-500 bg-red-50 focus:border-red-500`;
     }
     return `${baseClasses} border-gray-300 focus:border-black`;
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen px-4 py-16 bg-gray-100 md:py-20">
       <div className="w-full max-w-md px-6 py-12 bg-white border border-gray-200 rounded-lg md:px-10">
-
-
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-2xl font-black text-black md:text-3xl">
             Welcome Back
@@ -116,8 +105,6 @@ export default function Login({ setCurrentUser, addToast }) {
         )}
 
         <form className="space-y-5" onSubmit={formik.handleSubmit} noValidate>
-
-
           <div className="flex flex-col gap-2">
             <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
               Email Address * (required)
@@ -199,4 +186,6 @@ export default function Login({ setCurrentUser, addToast }) {
       </div>
     </div>
   );
-}
+};
+
+export default Login;

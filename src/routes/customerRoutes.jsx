@@ -10,21 +10,21 @@ import Denim from "../pages/Denim";
 import Accessories from "../pages/Accessories";
 import Outerwear from "../pages/Outerwear";
 import Trending from "../pages/Trending";
+import { useAuth } from "../context/AuthContext";
 
+const CustomerRoutes = () => {
+  const { addToast } = useAuth();
 
-export default function CustomerRoutes({ products, onAddToCart, addToast }) {
   return (
     <Routes>
-  
       <Route
         path="/"
         element={
           <ProtectedRoute addToast={addToast}>
-            <Home products={products} onAddToCart={onAddToCart} />
+            <Home />
           </ProtectedRoute>
         }
       />
-
 
       <Route
         path="/categories"
@@ -34,57 +34,35 @@ export default function CustomerRoutes({ products, onAddToCart, addToast }) {
           </ProtectedRoute>
         }
       >
-       
-        <Route
-          index
-          element={<CategoriesHome />}
-        />
-        
-     
-        <Route
-          path="sneakers"
-          element={<Sneakers products={products} onAddToCart={onAddToCart} />}
-        />
-        <Route
-          path="streetwear"
-          element={<Streetwear products={products} onAddToCart={onAddToCart} />}
-        />
-        <Route
-          path="denim"
-          element={<Denim products={products} onAddToCart={onAddToCart} />}
-        />
-        <Route
-          path="accessories"
-          element={<Accessories products={products} onAddToCart={onAddToCart} />}
-        />
-        <Route
-          path="outerwear"
-          element={<Outerwear products={products} onAddToCart={onAddToCart} />}
-        />
+        <Route index element={<CategoriesHome />} />
+        <Route path="sneakers" element={<Sneakers />} />
+        <Route path="streetwear" element={<Streetwear />} />
+        <Route path="denim" element={<Denim />} />
+        <Route path="accessories" element={<Accessories />} />
+        <Route path="outerwear" element={<Outerwear />} />
       </Route>
 
-     
       <Route
         path="/trending"
         element={
           <ProtectedRoute addToast={addToast}>
-            <Trending products={products} onAddToCart={onAddToCart} />
+            <Trending />
           </ProtectedRoute>
         }
       />
 
-      
       <Route
         path="/contact"
         element={
           <ProtectedRoute addToast={addToast}>
-            <Contact addToast={addToast} />
+            <Contact />
           </ProtectedRoute>
         }
       />
 
-     
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
-}
+};
+
+export default CustomerRoutes;

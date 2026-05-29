@@ -1,10 +1,12 @@
 import { FiHome, FiGrid, FiTrendingUp, FiMail, FiLogOut, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
-export default function CustomerLayout({ children, currentUser, setCurrentUser, addToast }) {
+const CustomerLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser, setCurrentUser, addToast } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
@@ -17,8 +19,8 @@ export default function CustomerLayout({ children, currentUser, setCurrentUser, 
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
-    setCurrentUser?.(null);
-    addToast?.('Logged out successfully', 'success');
+    setCurrentUser(null);
+    addToast('Logged out successfully', 'success');
     navigate('/login');
   };
 
@@ -50,18 +52,15 @@ export default function CustomerLayout({ children, currentUser, setCurrentUser, 
 
   return (
     <div className="min-h-screen bg-gray-50">
-    
       <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-white/90 border-b border-gray-200/60 shadow-sm shadow-black/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            
             <Link to="/" className="font-bold text-xl">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
                 GENZ.STORE
               </span>
             </Link>
 
-           
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -116,7 +115,6 @@ export default function CustomerLayout({ children, currentUser, setCurrentUser, 
               })}
             </nav>
 
-           
             <div className="hidden md:flex items-center gap-3">
               <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center">
@@ -146,7 +144,6 @@ export default function CustomerLayout({ children, currentUser, setCurrentUser, 
           </div>
         </div>
 
-       
         <div 
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
             mobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
@@ -229,10 +226,11 @@ export default function CustomerLayout({ children, currentUser, setCurrentUser, 
         </div>
       </header>
 
-     
       <main className="min-h-[calc(100vh-4rem)]">
         {children}
       </main>
     </div>
   );
-}
+};
+
+export default CustomerLayout;

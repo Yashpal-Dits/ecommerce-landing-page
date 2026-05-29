@@ -1,29 +1,11 @@
 import { useFormik } from "formik";
-import * as Yup from 'yup';
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { contactSchema } from "../validations/schemas";
 
-
-export default function Contact({ addToast }) {
+const Contact = () => {
   const navigate = useNavigate();
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .required('Name is required')
-      .min(2, 'Name must be at least 2 characters')
-      .max(50, 'Name must not exceed 50 characters'),
-    email: Yup.string()
-      .required('Email is required')
-      .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Invalid email format')
-      .max(50, 'Email must not exceed 50 characters'),
-    phone: Yup.string()
-      .matches(/^[0-9]{10}$/, 'Phone must be 10 digits')
-      .min(10, 'Phone number must be 10 digits')
-      .max(10, 'Phone number must be 10 digits'),
-    message: Yup.string()
-      .required('Message is required')
-      .min(10, 'Message must be at least 10 characters')
-      .max(500, 'Message must not exceed 500 characters')
-  });
-
+  const { addToast } = useAuth();
 
   const formik = useFormik({
     initialValues: {
@@ -32,10 +14,10 @@ export default function Contact({ addToast }) {
       phone: '',
       message: '',
     },
-    validationSchema,
+    validationSchema: contactSchema,
     onSubmit: (values) => {
       console.log('Form submitted', values);
-      addToast?.('Message sent successfully!', 'success');
+      addToast('Message sent successfully!', 'success');
       formik.resetForm();
       setTimeout(() => {
         navigate('/');
@@ -43,13 +25,12 @@ export default function Contact({ addToast }) {
     },
   });
 
-  
   const inputBaseClass = "w-full px-4 py-3 border-2 border-gray-200 rounded-md text-[15px] outline-none transition-all duration-200 focus:border-black resize-none";
   const errorInputClass = "border-red-500 focus:border-red-500 bg-red-50/30";
+
   return (
     <div className="min-h-screen bg-[#ebe7e7] pt-[120px] pb-16 px-4">
       <div className="w-full max-w-[600px] mx-auto bg-white rounded-xl shadow-sm p-8 md:p-10">
-       
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-[32px] font-black text-black mb-2">
             Contact Us
@@ -58,10 +39,7 @@ export default function Contact({ addToast }) {
             Have questions? We'd love to hear from you!
           </p>
         </div>
-       
         <form className="flex flex-col gap-5" onSubmit={formik.handleSubmit}>
-          
-          
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-800" htmlFor="name">
               Full Name 
@@ -80,7 +58,6 @@ export default function Contact({ addToast }) {
               <span className="text-xs text-red-500 font-medium">{formik.errors.name}</span>
             )}
           </div>
-          
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-800" htmlFor="email">
               Email Address 
@@ -99,7 +76,6 @@ export default function Contact({ addToast }) {
               <span className="text-xs text-red-500 font-medium">{formik.errors.email}</span>
             )}
           </div>
-         
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-800" htmlFor="phone">
               Phone Number (Optional)
@@ -119,7 +95,6 @@ export default function Contact({ addToast }) {
               <span className="text-xs text-red-500 font-medium">{formik.errors.phone}</span>
             )}
           </div>
-          
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-800" htmlFor="message">
               Your Message 
@@ -143,7 +118,6 @@ export default function Contact({ addToast }) {
               </span>
             </div>
           </div>
-         
           <button
             type="submit"
             className="w-full bg-black text-white py-4 mt-2 rounded-lg font-bold text-base uppercase tracking-wide transition-all duration-200 hover:bg-gray-800 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
@@ -155,4 +129,6 @@ export default function Contact({ addToast }) {
       </div>
     </div>
   );
-}
+};
+
+export default Contact;

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FiShoppingBag, FiMenu, FiX, FiLogOut, FiUser } from 'react-icons/fi';
+import { FiShoppingBag, FiMenu, FiX, FiLogOut } from 'react-icons/fi';
+import { useAuth } from '../../context/AuthContext';
 
-export default function Navbar({ cartCount, currentUser, setCurrentUser, addToast }) {
+const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { cartCount, currentUser, setCurrentUser, addToast } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -54,8 +56,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
             to="/"
             className="text-xl sm:text-2xl font-black tracking-wider text-black hover:text-gray-700 transition-colors duration-200 shrink-0"
           >
-            <span className="bg-linear
-            -to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
               GENZ.STORE
             </span>
           </Link>
@@ -89,8 +90,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
               currentUser ? (
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
-                    <div className="w-7 h-7 rounded-full bg-linear
-                    -to-br from-gray-800 to-gray-600 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-linear-to-br from-gray-800 to-gray-600 flex items-center justify-center">
                       <span className="text-xs font-bold text-white">
                         {currentUser.firstName?.charAt(0)}
                       </span>
@@ -175,8 +175,7 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
               {currentUser ? (
                 <>
                   <div className="flex items-center gap-3 px-4 py-2">
-                    <div className="w-8 h-8 rounded-full bg-linear
-                    -to-br from-gray-800 to-gray-600 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-linear-to-br from-gray-800 to-gray-600 flex items-center justify-center">
                       <span className="text-sm font-bold text-white">
                         {currentUser.firstName?.charAt(0)}
                       </span>
@@ -221,4 +220,6 @@ export default function Navbar({ cartCount, currentUser, setCurrentUser, addToas
       </div>
     </header>
   );
-}
+};
+
+export default Navbar;
