@@ -1,3 +1,5 @@
+// ── Enums ─────────
+
 export enum UserRole {
   Customer = 'customer',
   Admin = 'admin',
@@ -11,6 +13,8 @@ export enum SortOption {
   NameZA = 'name_desc',
 }
 
+// ── Product ───────────
+
 export interface Product {
   id: number;
   name: string;
@@ -18,6 +22,8 @@ export interface Product {
   price: number;
   image: string;
 }
+
+// ── User ────
 
 export interface User {
   id: string;
@@ -33,8 +39,66 @@ export interface User {
 
 export interface NewUser extends Omit<User, 'id' | 'tokenVerified'> {}
 
+// ── Toast ────────
+
 export interface ToastItem {
   id: number;
   type: 'success' | 'error' | 'info';
   message: string;
+}
+
+// ── Pagination ──────
+
+export interface UsePaginationOptions {
+
+  totalItems: number;
+  limit?: number;
+  initialPage?: number;
+}
+
+export interface UsePaginationReturn {
+
+  page: number;
+  limit: number;
+  skip: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+ 
+  goToPage: (page: number) => void;
+  nextPage: () => void;
+  prevPage: () => void;
+}
+
+export interface PaginationProps {
+  page: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
+  onPageChange: (page: number) => void;
+  onNext: () => void;
+  onPrev: () => void;
+  summary?: string;
+}
+
+// ── Infinite Scroll ───────────
+
+export interface UseInfiniteScrollOptions {
+  totalItems: number;
+  batchSize?: number;
+}
+
+export interface UseInfiniteScrollReturn {
+  visibleCount: number;
+  hasMore: boolean;
+  isLoading: boolean;
+}
+
+// ── ProductGrid ───────────
+
+export interface ProductGridProps {
+  products: Product[];
+  onAddToCart: (product: Product) => void;
+  itemsPerPage?: number;
+  mode?: 'pagination' | 'infinite';
 }
