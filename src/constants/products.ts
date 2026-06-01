@@ -1,4 +1,6 @@
-export const products = [
+import { Product } from '@/types';
+
+export const products: Product[] = [
   {
     id: 1,
     name: "Tokyo Oversized Tee",
@@ -96,10 +98,10 @@ export const categoryCards = [
 ];
 
 export const PRODUCTS_BY_CATEGORY = {
-  Sneakers: products.filter(p => p.category === 'Sneakers'),
-  Denim: products.filter(p => p.category === 'Denim'),
-  Streetwear: products.filter(p => p.category === 'Streetwear'),
-  Accessories: products.filter(p => p.category === 'Accessories'),
-  Outerwear: products.filter(p => p.category === 'Outerwear'),
+  Sneakers: products.filter((p) => p.category === 'Sneakers'),
+  Denim: products.filter((p) => p.category === 'Denim'),
+  Streetwear: products.filter((p) => p.category === 'Streetwear'),
+  Accessories: products.filter((p) => p.category === 'Accessories'),
+  Outerwear: products.filter((p) => p.category === 'Outerwear'),
   Trending: products,
 };

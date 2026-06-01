@@ -1,0 +1,6 @@
+{
+  "/admins": "/users?role=admin",
+  "/super_admins": "/users?role=super_admin",
+  "/customers": "/users?role=customer",
+  "/api/*": "/$1"
+}

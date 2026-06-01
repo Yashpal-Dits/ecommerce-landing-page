@@ -2,10 +2,25 @@ import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLock, FiLogOut, FiEye, FiAr
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { fetchUsersByRole } from '../../api';
+import { User } from '@/types';
 
 export const SuperAdminDashboardStats = () => {
-  const adminsCount = JSON.parse(localStorage.getItem('admins') || '[]').length;
-  
+  const [adminsCount, setAdminsCount] = useState(0);
+
+  useEffect(() => {
+    const loadAdminsCount = async () => {
+      try {
+        const admins = await fetchUsersByRole('admin');
+        setAdminsCount(admins.length);
+      } catch (error) {
+        console.error('Failed to load admin count:', error);
+      }
+    };
+
+    loadAdminsCount();
+  }, []);
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-8 text-gray-900">System Dashboard</h1>
@@ -38,22 +53,22 @@ export const SuperAdminDashboardStats = () => {
 const SuperAdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
-  const [admins, setAdmins] = useState([]);
+  const [admins, setAdmins] = useState<User[]>([]);
 
   useEffect(() => {
+    const loadAdmins = async () => {
+      try {
+        const fetchedAdmins = await fetchUsersByRole('admin');
+        setAdmins(fetchedAdmins);
+      } catch (error) {
+        console.error('Error loading admins:', error);
+      }
+    };
+
     loadAdmins();
   }, []);
 
-  const loadAdmins = () => {
-    try {
-      const admins = JSON.parse(localStorage.getItem('admins')) || [];
-      setAdmins(admins);
-    } catch (error) {
-      console.error('Error loading admins:', error);
-    }
-  };
-
-  const handleImpersonate = (admin) => {
+  const handleImpersonate = (admin: User) => {
     localStorage.setItem('impersonatedAdmin', JSON.stringify(admin));
     setImpersonatedAdmin(admin);
     addToast(`Viewing as ${admin.firstName} ${admin.lastName}`, 'info');

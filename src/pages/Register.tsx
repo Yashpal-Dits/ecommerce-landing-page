@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { useFormInput }  from "../hooks/useFormInput"
+import { useFormInput }  from "../hooks/useFormInput";
 import { useAuth } from "../context/AuthContext";
 import { registerSchema } from "../validations/schemas";
+import { createUser, fetchUserByEmail } from "../api";
+import { UserRole } from "../types";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ const Register = () => {
   const { getInputClass, getErrorMessage, getMaxLengthWarning } = useFormInput();
 
   const formik = useFormik({
-    initialValues: { name: '', email: '', password: '', role: 'customer' },
+    initialValues: { name: '', email: '', password: '', role: UserRole.Customer },
     validationSchema: registerSchema,
     validateOnBlur: true,
     validateOnChange: true,
@@ -21,16 +23,9 @@ const Register = () => {
         const lastName = nameParts.slice(1).join(' ') || '';
         const username = values.email.split('@')[0];
 
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-        const admins = JSON.parse(localStorage.getItem('admins') || '[]');
-        const customers = JSON.parse(localStorage.getItem('users') || '[]');
+        const existingUser = await fetchUserByEmail(values.email);
 
-        const emailExists = 
-          registeredUsers.some((u) => u.email === values.email) ||
-          admins.some((a) => a.email === values.email) ||
-          customers.some((c) => c.email === values.email);
-
-        if (emailExists) {
+        if (existingUser) {
           addToast('Email already registered. Please login.', 'error');
           setErrors({ submit: 'Email already registered. Please login.' });
           setSubmitting(false);
@@ -46,33 +41,17 @@ const Register = () => {
           password: values.password,
           role: values.role,
           image: 'https://i.pravatar.cc/150?img=12',
-          dummyUsername: 'emilys',
-          dummyPassword: 'emilyspass',
-          createdAt: new Date().toLocaleDateString(),
         };
 
-        if (values.role === 'admin') {
-          admins.push(newUser);
-          localStorage.setItem('admins', JSON.stringify(admins));
-        } else if (values.role === 'super_admin') {
-          const superAdmins = JSON.parse(localStorage.getItem('super_admins') || '[]');
-          superAdmins.push(newUser);
-          localStorage.setItem('super_admins', JSON.stringify(superAdmins));
-        } else {
-          customers.push(newUser);
-          localStorage.setItem('users', JSON.stringify(customers));
-        }
-
-        registeredUsers.push(newUser);
-        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+        await createUser(newUser);
 
         addToast('Account created successfully! Please login.', 'success');
         resetForm();
         setTimeout(() => navigate('/login'), 1000);
       } catch (err) {
         console.error('Register error:', err);
-        setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
-        addToast(err.message || 'Something went wrong. Please try again.', 'error');
+        setErrors({ submit: (err as Error).message || 'Something went wrong. Please try again.' });
+        addToast((err as Error).message || 'Something went wrong. Please try again.', 'error');
       } finally {
         setSubmitting(false);
       }

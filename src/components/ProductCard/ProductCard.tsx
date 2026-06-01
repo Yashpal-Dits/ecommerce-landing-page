@@ -1,10 +1,17 @@
-const inrCurrency = new Intl.NumberFormat("en-IN", {
-  style: "currency",
-  currency: "INR",
+import { Product } from '@/types';
+
+const inrCurrency = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
   maximumFractionDigits: 0,
 });
 
-const ProductCard = ({ product, onAddToCart }) => (
+interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+}
+
+const ProductCard = ({ product, onAddToCart }: ProductCardProps) => (
   <article className="flex flex-col bg-white transition-transform duration-300 ease-in-out hover:-translate-y-1">
     <div className="w-full aspect-video sm:aspect-square md:aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden mb-4">
       <img

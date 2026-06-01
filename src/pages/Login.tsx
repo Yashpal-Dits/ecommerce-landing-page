@@ -1,76 +1,57 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useAuth } from "../context/AuthContext";
-import { loginSchema } from "../validations/schemas"
+import { loginSchema } from "../validations/schemas";
+import { fetchUserByEmail } from "../api";
+import { UserRole } from '../types';
 
 const Login = () => {
   const navigate = useNavigate();
   const { setCurrentUser, addToast } = useAuth();
-  
-  const formik = useFormik({
+
+  const formik = useFormik<{ email: string; password: string }>({
     initialValues: { email: '', password: '' },
     validationSchema: loginSchema,
     validateOnBlur: true,
     validateOnChange: true,
-    onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
+    onSubmit: async (values, { setSubmitting, setStatus, resetForm }) => {
       try {
-        const registeredUsers = JSON.parse(
-          localStorage.getItem('registeredUsers') || '[]'
-        );
-        const localUser = registeredUsers.find((u) => u.email === values.email);
-        if (!localUser) {
+        const user = await fetchUserByEmail(values.email);
+
+        if (!user) {
           addToast('Email not found. Please register first.', 'error');
-          setErrors({ submit: 'Email not found. Please register first.' });
+          setStatus({ submit: 'Email not found. Please register first.' });
           setSubmitting(false);
           return;
         }
-        if (localUser.password !== values.password) {
+
+        if (user.password !== values.password) {
           addToast('Incorrect password', 'error');
-          setErrors({ submit: 'Incorrect password' });
+          setStatus({ submit: 'Incorrect password' });
           setSubmitting(false);
           return;
         }
-        const dummyUsername = localUser.dummyUsername || 'emilys';
-        const dummyPassword = localUser.dummyPassword || 'emilyspass';
-        const tokenRes = await fetch('https://dummyjson.com/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: dummyUsername,
-            password: dummyPassword,
-            expiresInMins: 60,
-          }),
-        });
-        if (!tokenRes.ok) throw new Error('Authentication failed');
-        const tokenData = await tokenRes.json();
-        const verifyRes = await fetch('https://dummyjson.com/user/me', {
-          method: 'GET',
-          headers: { Authorization: `Bearer ${tokenData.accessToken}` },
-          credentials: 'include',
-        });
-        if (!verifyRes.ok) throw new Error('Token verification failed');
-        await verifyRes.json();
-        localStorage.setItem('accessToken', tokenData.accessToken);
-        localStorage.setItem('refreshToken', tokenData.refreshToken);
+
         const userData = {
-          id: localUser.id,
-          firstName: localUser.firstName,
-          lastName: localUser.lastName,
-          email: localUser.email,
-          username: localUser.username,
-          image: localUser.image,
-          role: localUser.role || 'customer',
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username,
+          image: user.image,
+          role: user.role as UserRole,
           tokenVerified: true,
         };
+
         localStorage.setItem('currentUser', JSON.stringify(userData));
         setCurrentUser(userData);
-        addToast(`Welcome back, ${localUser.firstName}!`, 'success');
+        addToast(`Welcome back, ${user.firstName}!`, 'success');
         resetForm();
         setTimeout(() => navigate('/'), 1000);
       } catch (err) {
         console.error('Login error:', err);
-        setErrors({ submit: err.message || 'Something went wrong. Please try again.' });
-        addToast(err.message || 'Something went wrong. Please try again.', 'error');
+        setStatus({ submit: (err as Error).message || 'Something went wrong. Please try again.' });
+        addToast((err as Error).message || 'Something went wrong. Please try again.', 'error');
       } finally {
         setSubmitting(false);
       }
@@ -80,7 +61,7 @@ const Login = () => {
   const EMAIL_MAX = 50;
   const PASSWORD_MAX = 20;
 
-  const inputClass = (touched, error) => {
+  const inputClass = (touched: boolean | undefined, error: string | undefined) => {
     const baseClasses = 'w-full px-4 py-3 md:py-4 border-2 rounded text-sm md:text-base bg-white transition-all duration-200 ease-in focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed';
     if (touched && error) {
       return `${baseClasses} border-red-500 bg-red-50 focus:border-red-500`;
@@ -98,9 +79,9 @@ const Login = () => {
           <p className="text-sm text-gray-600">Sign in to continue to GENZ.STORE</p>
         </div>
 
-        {formik.errors.submit && (
+        {formik.status?.submit && (
           <div className="px-4 py-3 mb-6 text-xs font-medium text-red-600 border border-red-200 rounded bg-red-50 md:text-sm animate-slide-down">
-            {formik.errors.submit}
+            {formik.status.submit}
           </div>
         )}
 
