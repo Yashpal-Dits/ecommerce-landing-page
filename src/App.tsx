@@ -10,7 +10,7 @@ import CustomerRoutes from "./routes/customerRoutes";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const AppRoutes = () => {
-  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
+  const { currentUser, addToast, impersonatedAdmin } = useAuth();
 
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
@@ -34,18 +34,12 @@ const AppRoutes = () => {
     <BrowserRouter>
       {!currentUser ? (
         <Routes>
-          <Route path="/login" element={<Login setCurrentUser={setCurrentUser} addToast={addToast} />} />
-          <Route path="/register" element={<Register addToast={addToast} />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       ) : isAdmin ? (
-        <LayoutComponent
-          currentUser={currentUser}
-          setCurrentUser={setCurrentUser}
-          addToast={addToast}
-          impersonatedAdmin={impersonatedAdmin}
-          setImpersonatedAdmin={setImpersonatedAdmin}
-        >
+        <LayoutComponent>
           <Routes>
             <Route
               path="/admin/dashboard"
@@ -165,11 +159,7 @@ const AppRoutes = () => {
           </Routes>
         </LayoutComponent>
       ) : (
-        <LayoutComponent
-          currentUser={currentUser}
-          setCurrentUser={setCurrentUser}
-          addToast={addToast}
-        >
+        <LayoutComponent>
           <CustomerRoutes />
         </LayoutComponent>
       )}

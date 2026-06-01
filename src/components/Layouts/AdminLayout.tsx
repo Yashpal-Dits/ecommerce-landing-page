@@ -1,6 +1,6 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft, FiMenu, FiX } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { type ReactNode, useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminDashboardStats = () => {
@@ -29,7 +29,11 @@ export const AdminDashboardStats = () => {
   );
 };
 
-const AdminLayout = ({ children }) => {
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
+const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();

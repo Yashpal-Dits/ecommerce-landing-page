@@ -1,6 +1,6 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLock, FiLogOut, FiEye, FiArrowLeft } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { type ReactNode, useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { fetchUsersByRole } from '../../api';
 import { User } from '@/types';
@@ -50,7 +50,11 @@ export const SuperAdminDashboardStats = () => {
   );
 };
 
-const SuperAdminLayout = ({ children }) => {
+interface SuperAdminLayoutProps {
+  children: ReactNode;
+}
+
+const SuperAdminLayout = ({ children }: SuperAdminLayoutProps) => {
   const navigate = useNavigate();
   const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
   const [admins, setAdmins] = useState<User[]>([]);

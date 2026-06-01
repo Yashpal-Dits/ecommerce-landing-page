@@ -1,9 +1,13 @@
 import { FiHome, FiGrid, FiTrendingUp, FiMail, FiLogOut, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { type ReactNode, useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 
-const CustomerLayout = ({ children }) => {
+interface CustomerLayoutProps {
+  children: ReactNode;
+}
+
+const CustomerLayout = ({ children }: CustomerLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { currentUser, setCurrentUser, addToast } = useAuth();

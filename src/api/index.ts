@@ -1,56 +1,56 @@
+import axios from 'axios';
 import { NewUser, User } from '@/types';
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:4000';
 
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const getErrorMessage = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    return error.response
+      ? `HTTP ${error.response.status}: ${error.response.statusText}`
+      : error.message;
+  }
+
+  return error instanceof Error ? error.message : 'Unknown error';
+};
+
 export const fetchUserByEmail = async (email: string): Promise<User | null> => {
-  const url = `${API_URL}/users?email=${encodeURIComponent(email)}`;
-  console.log('Fetching user from:', url);
-  
   try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const { data: users } = await apiClient.get<User[]>('/users', {
+      params: { email },
     });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const users: User[] = await response.json();
+
     return users.length ? users[0] : null;
   } catch (error) {
-    console.error('Fetch error:', error);
-    throw new Error(`Failed to fetch user: ${(error as Error).message}`);
+    console.error('Fetch user error:', error);
+    throw new Error(`Failed to fetch user: ${getErrorMessage(error)}`);
   }
 };
 
 export const createUser = async (newUser: NewUser): Promise<User> => {
-  const url = `${API_URL}/users`;
-  console.log('Creating user at:', url);
-  
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(newUser),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to create user: HTTP ${response.status}`);
+  try {
+    const { data: user } = await apiClient.post<User>('/users', newUser);
+    return user;
+  } catch (error) {
+    console.error('Create user error:', error);
+    throw new Error(`Failed to create user: ${getErrorMessage(error)}`);
   }
-
-  return response.json();
 };
 
 export const fetchUsersByRole = async (role: string): Promise<User[]> => {
   const endpoint = role === 'admin' ? 'admins' : role === 'super_admin' ? 'super_admins' : 'customers';
-  const url = `${API_URL}/${endpoint}`;
-  console.log('Fetching users by role from:', url);
-  
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Failed to fetch users by role');
+
+  try {
+    const { data: users } = await apiClient.get<User[]>(`/${endpoint}`);
+    return users;
+  } catch (error) {
+    console.error('Fetch users by role error:', error);
+    throw new Error(`Failed to fetch users by role: ${getErrorMessage(error)}`);
   }
-  return response.json();
 };

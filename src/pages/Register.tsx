@@ -16,7 +16,7 @@ const Register = () => {
     validationSchema: registerSchema,
     validateOnBlur: true,
     validateOnChange: true,
-    onSubmit: async (values, { setSubmitting, setErrors, resetForm }) => {
+    onSubmit: async (values, { setSubmitting, setStatus, resetForm }) => {
       try {
         const nameParts = values.name.trim().split(' ');
         const firstName = nameParts[0];
@@ -27,7 +27,7 @@ const Register = () => {
 
         if (existingUser) {
           addToast('Email already registered. Please login.', 'error');
-          setErrors({ submit: 'Email already registered. Please login.' });
+          setStatus({ submit: 'Email already registered. Please login.' });
           setSubmitting(false);
           return;
         }
@@ -50,7 +50,7 @@ const Register = () => {
         setTimeout(() => navigate('/login'), 1000);
       } catch (err) {
         console.error('Register error:', err);
-        setErrors({ submit: (err as Error).message || 'Something went wrong. Please try again.' });
+        setStatus({ submit: (err as Error).message || 'Something went wrong. Please try again.' });
         addToast((err as Error).message || 'Something went wrong. Please try again.', 'error');
       } finally {
         setSubmitting(false);
@@ -72,9 +72,9 @@ const Register = () => {
           <p className="text-sm text-gray-600">Join GENZ.STORE for exclusive drops</p>
         </div>
 
-        {formik.errors.submit && (
+        {formik.status?.submit && (
           <div className="px-4 py-3 mb-6 text-xs font-medium text-red-600 border border-red-200 rounded bg-red-50 md:text-sm animate-slide-down">
-            {formik.errors.submit}
+            {formik.status.submit}
           </div>
         )}
 

@@ -102,7 +102,7 @@ const Contact = () => {
             <textarea
               id="message"
               name="message"
-              rows="5"
+              rows={5}
               className={`${inputBaseClass} min-h-[120px] ${formik.touched.message && formik.errors.message ? errorInputClass : ''}`}
               placeholder="Write your message here..."
               value={formik.values.message}
