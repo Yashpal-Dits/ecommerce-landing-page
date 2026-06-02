@@ -127,7 +127,13 @@ const Home = () => {
           </div>
 
           <Suspense fallback={<div className="min-h-[320px] flex items-center justify-center">Loading products…</div>}>
-            <ProductGrid products={filteredProducts} onAddToCart={handleAddToCart} />
+            <ProductGrid
+              key={searchTerm + sortOption}
+              products={filteredProducts}
+              onAddToCart={handleAddToCart}
+              itemsPerPage={4}
+              draggable
+            />
           </Suspense>
         </div>
       </section>

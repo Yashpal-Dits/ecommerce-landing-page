@@ -61,7 +61,7 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
+     
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">
             {navLinks.map((link) => {
               const isActive = currentPath === link.to || (link.to.startsWith('/#') && currentPath === '/');
@@ -133,7 +133,6 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-lg text-gray-700 hover:text-black hover:bg-gray-100 transition-all duration-200"
@@ -148,7 +147,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
@@ -184,13 +182,13 @@ const Navbar = () => {
                       {currentUser.firstName}
                     </span>
                   </div>
-                  <button
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800"
-                    onClick={handleLogout}
-                  >
-                    <FiLogOut className="w-4 h-4" />
-                    Log out
-                  </button>
+                 <button
+  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 relative z-10"
+  onClick={handleLogout}
+>
+  <FiLogOut className="w-4 h-4" />
+  Log out
+</button>
                 </>
               ) : (
                 <Link

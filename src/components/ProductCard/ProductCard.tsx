@@ -1,4 +1,4 @@
-import { Product } from '@/types';
+import type { ProductCardProps } from '@/types';
 
 const inrCurrency = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -6,13 +6,28 @@ const inrCurrency = new Intl.NumberFormat('en-IN', {
   maximumFractionDigits: 0,
 });
 
-interface ProductCardProps {
-  product: Product;
-  onAddToCart: (product: Product) => void;
-}
-
-const ProductCard = ({ product, onAddToCart }: ProductCardProps) => (
-  <article className="flex flex-col bg-white transition-transform duration-300 ease-in-out hover:-translate-y-1">
+const ProductCard = ({
+  product,
+  onAddToCart,
+  isDragging = false,
+  isDragOver = false,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onDragEnd,
+}: ProductCardProps) => (
+  <article
+    className={`flex flex-col bg-white transition-all duration-300 ease-in-out hover:-translate-y-1 rounded-lg
+      ${onDragStart ? 'cursor-grab active:cursor-grabbing' : ''}
+      ${isDragging ? 'opacity-40 scale-95' : ''}
+      ${isDragOver ? 'ring-2 ring-black ring-offset-2 scale-[1.02]' : ''}
+    `}
+    draggable={!!onDragStart}
+    onDragStart={onDragStart}
+    onDragOver={onDragOver}
+    onDrop={onDrop}
+    onDragEnd={onDragEnd}
+  >
     <div className="w-full aspect-video sm:aspect-square md:aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden mb-4">
       <img
         src={product.image}

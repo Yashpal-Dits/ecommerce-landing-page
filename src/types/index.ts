@@ -1,4 +1,4 @@
-// ── Enums ─────────
+// ── Enums ─────────────────────────────────────────
 
 export enum UserRole {
   Customer = 'customer',
@@ -13,7 +13,7 @@ export enum SortOption {
   NameZA = 'name_desc',
 }
 
-// ── Product ───────────
+// ── Product ───────────────────────────────────────
 
 export interface Product {
   id: number;
@@ -23,7 +23,7 @@ export interface Product {
   image: string;
 }
 
-// ── User ────
+// ── User ──────────────────────────────────────────
 
 export interface User {
   id: string;
@@ -39,7 +39,7 @@ export interface User {
 
 export interface NewUser extends Omit<User, 'id' | 'tokenVerified'> {}
 
-// ── Toast ────────
+// ── Toast ─────────────────────────────────────────
 
 export interface ToastItem {
   id: number;
@@ -47,24 +47,21 @@ export interface ToastItem {
   message: string;
 }
 
-// ── Pagination ──────
+// ── Pagination ────────────────────────────────────
 
 export interface UsePaginationOptions {
-
   totalItems: number;
   limit?: number;
   initialPage?: number;
 }
 
 export interface UsePaginationReturn {
-
   page: number;
   limit: number;
   skip: number;
   totalPages: number;
   hasNext: boolean;
   hasPrev: boolean;
- 
   goToPage: (page: number) => void;
   nextPage: () => void;
   prevPage: () => void;
@@ -81,7 +78,7 @@ export interface PaginationProps {
   summary?: string;
 }
 
-// ── Infinite Scroll ───────────
+// ── Infinite Scroll ───────────────────────────────
 
 export interface UseInfiniteScrollOptions {
   totalItems: number;
@@ -94,11 +91,38 @@ export interface UseInfiniteScrollReturn {
   isLoading: boolean;
 }
 
-// ── ProductGrid ───────────
+// ── Drag & Drop ───────────────────────────────────
+
+export interface DragAndDropReturn {
+  products: Product[];
+  dragIndex: number | null;
+  overIndex: number | null;
+  handleDragStart: (index: number) => void;
+  handleDragOver: (e: React.DragEvent, index: number) => void;
+  handleDrop: (index: number) => void;
+  handleDragEnd: () => void;
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+}
+
+// ── ProductCard ───────────────────────────────────
+
+export interface ProductCardProps {
+  product: Product;
+  onAddToCart: (product: Product) => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragStart?: () => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: () => void;
+  onDragEnd?: () => void;
+}
+
+// ── ProductGrid ───────────────────────────────────
 
 export interface ProductGridProps {
   products: Product[];
   onAddToCart: (product: Product) => void;
   itemsPerPage?: number;
   mode?: 'pagination' | 'infinite';
+  draggable?: boolean;
 }

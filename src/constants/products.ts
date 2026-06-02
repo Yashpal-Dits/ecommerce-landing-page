@@ -3,17 +3,17 @@ import { Product } from '@/types';
 export const products: Product[] = [
   // ── Streetwear (8) ──────────────────────────────
   { id: 1, name: "Tokyo Oversized Tee", category: "Streetwear", price: 2199, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80" },
-  { id: 3, name: "Indie Crop Hoodie", category: "Streetwear", price: 2499, image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80" },
+  { id: 3, name: "Indie Crop Hoodie", category: "Streetwear", price: 2499, image: "https://images.pexels.com/photos/28040595/pexels-photo-28040595.jpeg" },
   { id: 6, name: "Monsoon Co-ord Set", category: "Streetwear", price: 3199, image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?auto=format&fit=crop&w=900&q=80" },
   { id: 9, name: "Neon Graphic Tee", category: "Streetwear", price: 1899, image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=900&q=80" },
   { id: 10, name: "Acid Wash Joggers", category: "Streetwear", price: 2799, image: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=900&q=80" },
   { id: 11, name: "Oversized Utility Vest", category: "Streetwear", price: 3499, image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=900&q=80" },
   { id: 12, name: "Graffiti Print Hoodie", category: "Streetwear", price: 2999, image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=80" },
-  { id: 13, name: "Camo Cargo Shorts", category: "Streetwear", price: 2399, image: "https://images.unsplash.com/photo-1565084888279-aca5ecc15e84?auto=format&fit=crop&w=900&q=80" },
+  { id: 13, name: "Camo Cargo Shorts", category: "Streetwear", price: 2399, image: "https://images.pexels.com/photos/29142478/pexels-photo-29142478.jpeg" },
 
   // ── Denim (5) ───────────────────────────────────
   { id: 2, name: "Seoul Cargo Pants", category: "Denim", price: 2899, image: "https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=900&q=80" },
-  { id: 14, name: "Slim Fit Ripped Jeans", category: "Denim", price: 3199, image: "https://images.unsplash.com/photo-1541099649105-f69ad29bc747?auto=format&fit=crop&w=900&q=80" },
+  { id: 14, name: "Slim Fit Ripped Jeans", category: "Denim", price: 3199, image: "https://images.pexels.com/photos/1082526/pexels-photo-1082526.jpeg"},
   { id: 15, name: "Wide Leg Denim Trousers", category: "Denim", price: 3599, image: "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=900&q=80" },
   { id: 16, name: "Vintage Wash Denim Shorts", category: "Denim", price: 2199, image: "https://images.unsplash.com/photo-1560243563-062bfc001d68?auto=format&fit=crop&w=900&q=80" },
   { id: 17, name: "Denim Trucker Jacket", category: "Denim", price: 4199, image: "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?auto=format&fit=crop&w=900&q=80" },
