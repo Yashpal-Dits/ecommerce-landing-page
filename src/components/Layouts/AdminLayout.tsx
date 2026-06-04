@@ -88,12 +88,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">{currentUser?.firstName?.charAt(0)}</span>
+              <Link
+                to="/admin/settings"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200/60 transition-colors group cursor-pointer"
+              >
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center border border-gray-200">
+                  {currentUser?.image ? (
+                    <img src={currentUser.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-bold text-white">{currentUser?.firstName?.charAt(0)?.toUpperCase()}</span>
+                  )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">{currentUser?.firstName}</span>
-              </div>
+                <span className="text-sm font-medium text-gray-700 group-hover:text-black">{currentUser?.firstName}</span>
+              </Link>
               {impersonatedAdmin && (
                 <button
                   onClick={handleStopImpersonate}
@@ -141,12 +148,19 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
               );
             })}
             <div className="pt-2 border-t border-gray-100 mt-2 space-y-2">
-              <div className="flex items-center gap-3 px-4 py-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white">{currentUser?.firstName?.charAt(0)}</span>
+              <Link
+                to="/admin/settings"
+                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer animate-fade-in"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center border border-gray-200">
+                  {currentUser?.image ? (
+                    <img src={currentUser.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-bold text-white">{currentUser?.firstName?.charAt(0)?.toUpperCase()}</span>
+                  )}
                 </div>
                 <span className="text-sm font-semibold text-gray-800">{currentUser?.firstName}</span>
-              </div>
+              </Link>
               {impersonatedAdmin && (
                 <button
                   onClick={handleStopImpersonate}

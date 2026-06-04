@@ -22,7 +22,7 @@ const MemberSection = () => (
           required 
         />
         <button 
-          className="px-6 md:px-8 py-3 md:py-4 bg-white text-black font-bold uppercase text-sm md:text-base rounded transition-opacity duration-200 hover:opacity-90 whitespace-nowrap"
+          className="px-6 md:px-8 py-3 md:py-4 bg-white text-black font-bold uppercase text-sm md:text-base rounded transition-opacity duration-200 hover:opacity-90 whitespace-nowrap cursor-pointer"
           type="submit"
         >
           Join Now

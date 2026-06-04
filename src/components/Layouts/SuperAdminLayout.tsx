@@ -116,9 +116,21 @@ const SuperAdminLayout = ({ children }: SuperAdminLayoutProps) => {
               )}
             </div>
             <div className="flex items-center gap-6">
-              <span className="text-sm text-purple-100">
-                <span className="font-semibold text-white">{currentUser?.firstName}</span> (Super Admin)
-              </span>
+              <Link
+                to="/super-admin/settings"
+                className="flex items-center gap-2 hover:opacity-95 transition-opacity group cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-white/20 flex items-center justify-center border border-purple-400/50 shadow-sm">
+                  {currentUser?.image ? (
+                    <img src={currentUser.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-bold text-white">{currentUser?.firstName?.charAt(0)?.toUpperCase()}</span>
+                  )}
+                </div>
+                <span className="text-sm text-purple-100 group-hover:text-white transition-colors">
+                  <span className="font-semibold text-white">{currentUser?.firstName}</span> (Super Admin)
+                </span>
+              </Link>
               {impersonatedAdmin && (
                 <button
                   onClick={handleStopImpersonate}

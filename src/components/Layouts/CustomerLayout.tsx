@@ -120,16 +120,23 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
             </nav>
 
             <div className="hidden md:flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200/60">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">
-                    {currentUser?.firstName?.charAt(0)?.toUpperCase()}
-                  </span>
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg border border-gray-200/60 transition-all cursor-pointer group"
+              >
+                <div className="w-7 h-7 rounded-full overflow-hidden bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center border border-gray-200">
+                  {currentUser?.image ? (
+                    <img src={currentUser.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-bold text-white">
+                      {currentUser?.firstName?.charAt(0)?.toUpperCase()}
+                    </span>
+                  )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-700 group-hover:text-black">
                   {currentUser?.firstName}
                 </span>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-gray-900 rounded-lg hover:bg-gray-800 hover:shadow-md transition-all duration-200"
@@ -196,12 +203,12 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
               return (
                 <Link
                   key={item.to}
-                  to={item.to}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'text-black bg-gray-100'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
+                  to={item.to}
                 >
                   <Icon className="w-5 h-5" />
                   {item.label}
@@ -210,14 +217,21 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
             })}
             
             <div className="pt-2 border-t border-gray-100 mt-2 space-y-2">
-              <div className="flex items-center gap-3 px-4 py-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white">
-                    {currentUser?.firstName?.charAt(0)?.toUpperCase()}
-                  </span>
+              <Link
+                to="/profile"
+                className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-800 to-gray-600 flex items-center justify-center border border-gray-200">
+                  {currentUser?.image ? (
+                    <img src={currentUser.image} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-sm font-bold text-white">
+                      {currentUser?.firstName?.charAt(0)?.toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <span className="text-sm font-semibold text-gray-800">{currentUser?.firstName}</span>
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-all"

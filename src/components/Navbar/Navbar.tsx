@@ -100,7 +100,7 @@ const Navbar = () => {
                     </span>
                   </div>
                   <button
-                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-md"
+                    className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-xs font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 hover:shadow-md cursor:pointer"
                     onClick={handleLogout}
                   >
                     <FiLogOut className="w-3.5 h-3.5" />
@@ -183,7 +183,7 @@ const Navbar = () => {
                     </span>
                   </div>
                  <button
-  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 relative z-10"
+  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 relative z-10 cursor-pointer"
   onClick={handleLogout}
 >
   <FiLogOut className="w-4 h-4" />
@@ -194,7 +194,7 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setIsMenuOpen(false)}
-                  className="block w-full text-center px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800"
+                  className="block w-full text-center px-4 py-3 bg-gray-900 text-white text-sm font-semibold uppercase rounded-lg transition-all duration-200 hover:bg-gray-800 "
                 >
                   Login
                 </Link>

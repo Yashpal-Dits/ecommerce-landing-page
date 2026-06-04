@@ -54,3 +54,13 @@ export const fetchUsersByRole = async (role: string): Promise<User[]> => {
     throw new Error(`Failed to fetch users by role: ${getErrorMessage(error)}`);
   }
 };
+
+export const updateUser = async (user: User): Promise<User> => {
+  try {
+    const { data: updatedUser } = await apiClient.put<User>(`/users/${user.id}`, user);
+    return updatedUser;
+  } catch (error) {
+    console.error('Update user error:', error);
+    throw new Error(`Failed to update user: ${getErrorMessage(error)}`);
+  }
+};

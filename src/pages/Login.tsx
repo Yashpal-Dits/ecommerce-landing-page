@@ -149,7 +149,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={formik.isSubmitting}
-            className="w-full py-3 mt-2 text-sm font-bold text-white uppercase transition-all duration-200 bg-black rounded md:py-4 md:text-base hover:bg-gray-800 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3 mt-2 text-sm font-bold text-white uppercase transition-all duration-200 bg-black rounded md:py-4 md:text-base hover:bg-gray-800 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer" 
           >
             {formik.isSubmitting ? 'Signing In…' : 'Sign In'}
           </button>

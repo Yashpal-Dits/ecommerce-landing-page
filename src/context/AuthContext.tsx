@@ -1,19 +1,6 @@
 import { createContext, useState, useEffect, useContext, ReactNode, useCallback } from 'react';
-import { ToastItem, User } from '@/types';
+import { ToastItem, User, AuthContextValue } from '@/types';
 
-interface AuthContextValue {
-  currentUser: User | null;
-  setCurrentUser: (user: User | null) => void;
-  cartCount: number;
-  setCartCount: (count: number) => void;
-  toasts: ToastItem[];
-  setToasts: (toasts: ToastItem[]) => void;
-  addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
-  removeToast: (id: number) => void;
-  impersonatedAdmin: User | null;
-  setImpersonatedAdmin: (admin: User | null) => void;
-  handleAddToCart: () => void;
-}
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 

@@ -31,7 +31,7 @@ const Pagination = ({
           onClick={onPrev}
           disabled={!hasPrev}
           aria-label="Previous page"
-          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -45,7 +45,7 @@ const Pagination = ({
             aria-current={p === page ? 'page' : undefined}
             aria-label={`Page ${p}`}
             className={`
-              min-w-[36px] h-9 rounded-lg text-sm font-bold transition-all duration-200
+              min-w-[36px] h-9 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer
               ${
                 p === page
                   ? 'bg-black text-white shadow-md'
@@ -63,7 +63,7 @@ const Pagination = ({
           onClick={onNext}
           disabled={!hasNext}
           aria-label="Next page"
-          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

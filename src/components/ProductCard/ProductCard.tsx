@@ -54,7 +54,7 @@ const ProductCard = ({
         <button
           type="button"
           onClick={() => onAddToCart(product)}
-          className="px-4 py-2 md:px-4 md:py-2 bg-black text-white text-xs md:text-xs font-black uppercase rounded transition-colors duration-200 hover:bg-gray-800 active:scale-95"
+          className="px-4 py-2 md:px-4 md:py-2 bg-black text-white text-xs md:text-xs font-black uppercase rounded transition-colors duration-200 hover:bg-gray-800 active:scale-95 cursor-pointer"
         >
           Add
         </button>

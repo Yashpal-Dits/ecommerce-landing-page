@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { registerSchema } from "../validations/schemas";
 import { createUser, fetchUserByEmail } from "../api";
 import { UserRole } from "../types";
+import { FileUpload } from "../components/ui/FileUpload";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Register = () => {
   const { getInputClass, getErrorMessage, getMaxLengthWarning } = useFormInput();
 
   const formik = useFormik({
-    initialValues: { name: '', email: '', password: '', role: UserRole.Customer },
+    initialValues: { name: '', email: '', password: '', role: UserRole.Customer, image: '' },
     validationSchema: registerSchema,
     validateOnBlur: true,
     validateOnChange: true,
@@ -40,7 +41,7 @@ const Register = () => {
           email: values.email,
           password: values.password,
           role: values.role,
-          image: 'https://i.pravatar.cc/150?img=12',
+          image: values.image || 'https://i.pravatar.cc/150?img=12',
         };
 
         await createUser(newUser);
@@ -164,6 +165,16 @@ const Register = () => {
             <div className="h-5">
               {getErrorMessage(formik.touched.role, formik.errors.role)}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-bold tracking-widest text-gray-800 uppercase">
+              Profile Picture (optional)
+            </label>
+            <FileUpload
+              onFileSelect={(base64Url) => formik.setFieldValue('image', base64Url)}
+              maxSizeMB={2}
+            />
           </div>
 
           <button

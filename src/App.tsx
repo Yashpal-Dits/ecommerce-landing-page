@@ -6,6 +6,7 @@ import AdminLayout, { AdminDashboardStats } from "./components/Layouts/AdminLayo
 import SuperAdminLayout, { SuperAdminDashboardStats } from "./components/Layouts/SuperAdminLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SettingsPage from "./pages/Settings";
 import CustomerRoutes from "./routes/customerRoutes";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
@@ -82,12 +83,7 @@ const AppRoutes = () => {
               path="/admin/settings"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Admin Settings</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">Settings panel coming soon...</p>
-                    </div>
-                  </div>
+                  <SettingsPage />
                 </ProtectedRoute>
               }
             />
@@ -133,12 +129,7 @@ const AppRoutes = () => {
               path="/super-admin/settings"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">System Settings</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">System settings panel coming soon...</p>
-                    </div>
-                  </div>
+                  <SettingsPage />
                 </ProtectedRoute>
               }
             />
@@ -168,10 +159,12 @@ const AppRoutes = () => {
 };
 
 const App = () => (
-  <AuthProvider>
-    <AppRoutes />
-    <ToastContainerWrapper />
-  </AuthProvider>
+  AuthProvider ? (
+    <AuthProvider>
+      <AppRoutes />
+      <ToastContainerWrapper />
+    </AuthProvider>
+  ) : null
 );
 
 const ToastContainerWrapper = () => {

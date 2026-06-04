@@ -126,3 +126,31 @@ export interface ProductGridProps {
   mode?: 'pagination' | 'infinite';
   draggable?: boolean;
 }
+
+
+//--------------FILE UPLAOD INTERFACE--------
+
+export interface FileUploadProps {
+  onFileSelect: (base64Url: string) => void;
+  maxSizeMB?: number;
+  allowedTypes?: string[];
+  initialPreviewUrl?: string;
+  className?: string;
+}
+
+
+//-----------authContext Value--------
+
+export interface AuthContextValue {
+  currentUser: User | null;
+  setCurrentUser: (user: User | null) => void;
+  cartCount: number;
+  setCartCount: (count: number) => void;
+  toasts: ToastItem[];
+  setToasts: (toasts: ToastItem[]) => void;
+  addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  removeToast: (id: number) => void;
+  impersonatedAdmin: User | null;
+  setImpersonatedAdmin: (admin: User | null) => void;
+  handleAddToCart: () => void;
+}
