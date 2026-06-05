@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { loginSchema } from "../validations/schemas";
 import { fetchUserByEmail } from "../api";
 import { UserRole } from '../types';
+import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -50,8 +51,16 @@ const Login = () => {
         setTimeout(() => navigate('/'), 1000);
       } catch (err) {
         console.error('Login error:', err);
-        setStatus({ submit: (err as Error).message || 'Something went wrong. Please try again.' });
-        addToast((err as Error).message || 'Something went wrong. Please try again.', 'error');
+
+        const isNetworkError =
+          axios.isAxiosError(err) && !err.response;
+
+        const errorMessage = isNetworkError
+          ? 'Cannot connect to server. Make sure json-server is running:\n  npm run dev:all'
+          : (err as Error).message || 'Something went wrong. Please try again.';
+
+        addToast(errorMessage, 'error');
+        setStatus({ submit: errorMessage });
       } finally {
         setSubmitting(false);
       }

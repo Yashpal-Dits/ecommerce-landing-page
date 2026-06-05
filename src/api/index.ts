@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { NewUser, User } from '@/types';
 
-const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || 'http://localhost:4000';
+const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -12,8 +12,12 @@ const apiClient = axios.create({
 
 const getErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
+   
+    if (!error.response) {
+      return 'Unable to connect to server. Please ensure json-server is running: npm run dev:all';
+    }
     return error.response
-      ? `HTTP ${error.response.status}: ${error.response.statusText}`
+      ? `Server error (${error.response.status}): ${error.response.statusText}`
       : error.message;
   }
 

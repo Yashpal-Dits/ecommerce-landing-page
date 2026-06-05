@@ -13,4 +13,24 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/users': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+      '/admins': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+      '/super_admins': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+      '/customers': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

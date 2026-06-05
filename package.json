@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npx concurrently --names \"VITE,API\" --prefix-colors \"cyan,yellow\" \"vite\" \"json-server --watch db.json --routes routes.json --port 4000\"",
+    "dev:vite": "vite",
+    "dev:api": "json-server --watch db.json --routes routes.json --port 4000",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "json-server": "json-server --watch db.json --routes routes.json --port 4000",
-    "dev:all": "npx concurrently --names \"VITE,API\" --prefix-colors \"cyan,yellow\" \"npm run dev\" \"npm run json-server\""
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.9",
