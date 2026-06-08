@@ -1,7 +1,7 @@
 import { FiHome, FiGrid, FiTrendingUp, FiMail, FiLogOut, FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { type ReactNode, useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAppStore } from '../../store/useAppStore';
 
 interface CustomerLayoutProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface CustomerLayoutProps {
 const CustomerLayout = ({ children }: CustomerLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, setCurrentUser, addToast } = useAuth();
+  const { currentUser, setCurrentUser, addToast, logout } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
 
@@ -20,10 +20,7 @@ const CustomerLayout = ({ children }: CustomerLayoutProps) => {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('currentUser');
-    setCurrentUser(null);
+    logout();
     addToast('Logged out successfully', 'success');
     navigate('/login');
   };

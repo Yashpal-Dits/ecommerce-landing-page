@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { useFormInput }  from "../hooks/useFormInput";
-import { useAuth } from "../context/AuthContext";
+import { useAppStore } from "../store/useAppStore";
 import { registerSchema } from "../validations/schemas";
 import { createUser, fetchUserByEmail } from "../api";
 import { UserRole } from "../types";
@@ -9,7 +9,7 @@ import { FileUpload } from "../components/ui/FileUpload";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { addToast } = useAuth();
+  const { addToast } = useAppStore();
   const { getInputClass, getErrorMessage, getMaxLengthWarning } = useFormInput();
 
   const formik = useFormik({

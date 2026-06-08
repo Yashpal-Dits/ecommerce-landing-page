@@ -1,16 +1,28 @@
-# React + Vite
+GENZ.STORE - E-commerce Landing Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, fully-featured e-commerce landing page built with React, featuring role-based authentication (Customer, Admin, Super Admin), product browsing, and admin dashboards.
 
-Currently, two official plugins are available:
+GENZ.STORE
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Features
+Modern UI/UX — Clean streetwear aesthetic with glassmorphism, responsive design, and smooth interactions.
+Role-Based Access Control — Separate experiences for Customers, Admins, and Super Admins
+Impersonation Mode — Super Admins can view the platform as any Admin
+Product Catalog — Browse by categories (Sneakers, Streetwear, Denim, Outerwear, Accessories)
+Search, sort (price/name), pagination, and drag-and-drop reordering
+User Authentication — Login/Register with form validation
+Profile Management — Update personal details and upload profile pictures
+Admin Dashboards — Stats overview + placeholder sections for analytics and user management
+Toast Notifications — Clean feedback system throughout the app
+Mock Backend — Powered by json-server for realistic API simulation
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+ Tech Stack
+Frontend: React 19 + Vite + TypeScript
+Styling: Tailwind CSS 4 + custom components
+Routing: React Router v7
+Forms: Formik + Yup validation
+HTTP Client: Axios
+Icons: Lucide React + React Icons
+Mock API: json-server
+Other: Context API, Custom hooks (pagination, infinite scroll, drag & drop)

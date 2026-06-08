@@ -8,10 +8,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SettingsPage from "./pages/Settings";
 import CustomerRoutes from "./routes/customerRoutes";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { useAppStore } from "./store/useAppStore";
 
 const AppRoutes = () => {
-  const { currentUser, addToast, impersonatedAdmin } = useAuth();
+  const { currentUser, addToast, impersonatedAdmin } = useAppStore();
 
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
@@ -158,18 +158,16 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => (
-  AuthProvider ? (
-    <AuthProvider>
-      <AppRoutes />
-      <ToastContainerWrapper />
-    </AuthProvider>
-  ) : null
-);
-
 const ToastContainerWrapper = () => {
-  const { toasts, removeToast } = useAuth();
+  const { toasts, removeToast } = useAppStore();
   return <ToastContainer toasts={toasts} removeToast={removeToast} />;
 };
+
+const App = () => (
+  <>
+    <AppRoutes />
+    <ToastContainerWrapper />
+  </>
+);
 
 export default App;

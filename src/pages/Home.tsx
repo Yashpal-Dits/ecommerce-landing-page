@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { products as productsData } from "../constants/products";
+import { useAppStore } from "../store/useAppStore";
+import { useProducts } from "../queries/useProducts";
 import { SortOption } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProductGrid from "../components/ProductGrid/ProductGrid";
@@ -24,7 +24,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState<SortOption>(SortOption.PriceLowToHigh);
-  const { handleAddToCart } = useAuth();
+  const { addToCart: handleAddToCart } = useAppStore();
+
+  const { data: productsData = [], isLoading: isProductsLoading } = useProducts();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,9 +59,9 @@ const Home = () => {
           return 0;
       }
     });
-  }, [searchTerm, sortOption]);
+  }, [searchTerm, sortOption, productsData]);
 
-  if (loading) {
+  if (loading || isProductsLoading) {
     return (
       <main className="space-y-10 p-6">
         <Skeleton className="h-[400px] w-full rounded-2xl" />

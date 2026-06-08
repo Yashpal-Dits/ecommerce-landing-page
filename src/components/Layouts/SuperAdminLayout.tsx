@@ -1,7 +1,7 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLock, FiLogOut, FiEye, FiArrowLeft } from 'react-icons/fi';
 import { Link, useNavigate } from 'react-router-dom';
 import { type ReactNode, useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAppStore } from '../../store/useAppStore';
 import { fetchUsersByRole } from '../../api';
 import { User } from '@/types';
 
@@ -56,7 +56,7 @@ interface SuperAdminLayoutProps {
 
 const SuperAdminLayout = ({ children }: SuperAdminLayoutProps) => {
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin, logout } = useAppStore();
   const [admins, setAdmins] = useState<User[]>([]);
 
   useEffect(() => {
@@ -73,25 +73,19 @@ const SuperAdminLayout = ({ children }: SuperAdminLayoutProps) => {
   }, []);
 
   const handleImpersonate = (admin: User) => {
-    localStorage.setItem('impersonatedAdmin', JSON.stringify(admin));
     setImpersonatedAdmin(admin);
     addToast(`Viewing as ${admin.firstName} ${admin.lastName}`, 'info');
     navigate('/admin/dashboard');
   };
 
   const handleStopImpersonate = () => {
-    localStorage.removeItem('impersonatedAdmin');
     setImpersonatedAdmin(null);
     addToast('Stopped impersonating', 'success');
     navigate('/super-admin/dashboard');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('impersonatedAdmin');
-    setCurrentUser(null);
+    logout();
     addToast('Logged out successfully', 'success');
     navigate('/login');
   };

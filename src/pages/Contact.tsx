@@ -1,11 +1,11 @@
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAppStore } from "../store/useAppStore";
 import { contactSchema } from "../validations/schemas";
 
 const Contact = () => {
   const navigate = useNavigate();
-  const { addToast } = useAuth();
+  const { addToast } = useAppStore();
 
   const formik = useFormik({
     initialValues: {

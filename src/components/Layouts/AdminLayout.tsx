@@ -1,7 +1,7 @@
 import { FiHome, FiBarChart2, FiUsers, FiSettings, FiLogOut, FiEye, FiArrowLeft, FiMenu, FiX } from 'react-icons/fi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { type ReactNode, useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useAppStore } from '../../store/useAppStore';
 
 export const AdminDashboardStats = () => {
   return (
@@ -36,7 +36,7 @@ interface AdminLayoutProps {
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin } = useAuth();
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, setImpersonatedAdmin, logout } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -44,18 +44,13 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
   }, [location.pathname]);
 
   const handleStopImpersonate = () => {
-    localStorage.removeItem('impersonatedAdmin');
     setImpersonatedAdmin(null);
     addToast('Returned to Super Admin view', 'success');
     navigate('/super-admin/dashboard');
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('impersonatedAdmin');
-    setCurrentUser(null);
+    logout();
     addToast('Logged out successfully', 'success');
     navigate('/login');
   };

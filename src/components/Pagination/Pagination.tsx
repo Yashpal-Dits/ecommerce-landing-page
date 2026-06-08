@@ -18,14 +18,13 @@ const Pagination = ({
 
   return (
     <nav aria-label="Pagination" className="flex flex-col items-center gap-3 mt-10">
-      {/* Summary */}
+      
       {summary && (
         <p className="text-sm text-gray-500 font-medium">{summary}</p>
       )}
 
-      {/* Controls */}
       <div className="flex items-center gap-1">
-        {/* Previous */}
+     
         <button
           type="button"
           onClick={onPrev}
@@ -36,7 +35,6 @@ const Pagination = ({
           <ChevronLeft className="w-4 h-4" />
         </button>
 
-        {/* Page numbers */}
         {pages.map((p) => (
           <button
             key={p}
@@ -57,7 +55,7 @@ const Pagination = ({
           </button>
         ))}
 
-        {/* Next */}
+     
         <button
           type="button"
           onClick={onNext}
@@ -69,7 +67,7 @@ const Pagination = ({
         </button>
       </div>
 
-      {/* Page X of Y */}
+     
       <p className="text-xs text-gray-400">
         Page {page} of {totalPages}
       </p>

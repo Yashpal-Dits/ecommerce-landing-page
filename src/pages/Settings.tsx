@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAppStore } from '../store/useAppStore';
 import { FileUpload } from '../components/ui/FileUpload';
 import { updateUser } from '../api';
 import { UserRole } from '../types';
 
 export const SettingsPage = () => {
-  const { currentUser, setCurrentUser, addToast } = useAuth();
+  const { currentUser, setCurrentUser, addToast } = useAppStore();
   const [firstName, setFirstName] = useState(currentUser?.firstName || '');
   const [lastName, setLastName] = useState(currentUser?.lastName || '');
   const [username, setUsername] = useState(currentUser?.username || '');

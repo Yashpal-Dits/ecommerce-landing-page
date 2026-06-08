@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiShoppingBag, FiMenu, FiX, FiLogOut } from 'react-icons/fi';
-import { useAuth } from '../../context/AuthContext';
+import { useAppStore } from '../../store/useAppStore';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cartCount, currentUser, setCurrentUser, addToast } = useAuth();
+  const { cartCount, currentUser, setCurrentUser, addToast, logout } = useAppStore();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -21,10 +21,7 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('currentUser');
-    setCurrentUser(null);
+    logout();
     addToast('Logged out successfully!', 'success');
     navigate('/login');
     setIsMenuOpen(false);

@@ -57,18 +57,29 @@ export interface UsePaginationOptions {
 
 //-----------authContext Value--------
 
-export interface AuthContextValue {
+ export interface AppState {
   currentUser: User | null;
-  setCurrentUser: (user: User | null) => void;
+  impersonatedAdmin: User | null;
+
   cartCount: number;
-  setCartCount: (count: number) => void;
+  cartItems: any[]; 
+
+  
   toasts: ToastItem[];
-  setToasts: (toasts: ToastItem[]) => void;
+
+  setCurrentUser: (user: User | null) => void;
+  setImpersonatedAdmin: (admin: User | null) => void;
+
+  
+  addToCart: (product?: any) => void;
+  clearCart: () => void;
+
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
   removeToast: (id: number) => void;
-  impersonatedAdmin: User | null;
-  setImpersonatedAdmin: (admin: User | null) => void;
-  handleAddToCart: () => void;
+
+  logout: () => void;
+  isLoggedIn: () => boolean;
+  getEffectiveRole: () => string;
 }
 
 export interface UsePaginationReturn {
@@ -94,7 +105,7 @@ export interface PaginationProps {
   summary?: string;
 }
 
-// ── Infinite Scroll ───────────────────────────────
+//--------------Infinite Scroll ----------------
 
 export interface UseInfiniteScrollOptions {
   totalItems: number;
@@ -107,7 +118,7 @@ export interface UseInfiniteScrollReturn {
   isLoading: boolean;
 }
 
-// ── Drag & Drop ───────────────────────────────────
+//-------------- Drag & Drop -----------------
 
 export interface DragAndDropReturn {
   products: Product[];
@@ -120,7 +131,7 @@ export interface DragAndDropReturn {
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
 }
 
-// ── ProductCard ───────────────────────────────────
+// --------------- ProductCard-------------------
 
 export interface ProductCardProps {
   product: Product;
@@ -133,7 +144,7 @@ export interface ProductCardProps {
   onDragEnd?: () => void;
 }
 
-// ── ProductGrid ───────────────────────────────────
+//------------ProductGrid-----------------------
 
 export interface ProductGridProps {
   products: Product[];

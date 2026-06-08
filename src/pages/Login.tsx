@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
-import { useAuth } from "../context/AuthContext";
+import { useAppStore } from "../store/useAppStore";
 import { loginSchema } from "../validations/schemas";
 import { fetchUserByEmail } from "../api";
 import { UserRole } from '../types';
@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setCurrentUser, addToast } = useAuth();
+  const { setCurrentUser, addToast } = useAppStore();
 
   const formik = useFormik<{ email: string; password: string }>({
     initialValues: { email: '', password: '' },

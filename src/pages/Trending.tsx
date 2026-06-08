@@ -1,9 +1,9 @@
 import ProductGrid from "../components/ProductGrid/ProductGrid";
-import { useAuth } from "../context/AuthContext";
+import { useAppStore } from "../store/useAppStore";
 import { PRODUCTS_BY_CATEGORY } from "../constants/products";
 
 const Trending = () => {
-  const { handleAddToCart } = useAuth();
+  const { addToCart: handleAddToCart } = useAppStore();
   const products = PRODUCTS_BY_CATEGORY.Trending;
 
   return (

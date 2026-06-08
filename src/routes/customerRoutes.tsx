@@ -11,10 +11,10 @@ import Accessories from "../pages/Accessories";
 import Outerwear from "../pages/Outerwear";
 import Trending from "../pages/Trending";
 import SettingsPage from "../pages/Settings";
-import { useAuth } from "../context/AuthContext";
+import { useAppStore } from "../store/useAppStore";
 
 const CustomerRoutes = () => {
-  const { addToast } = useAuth();
+  const { addToast } = useAppStore();
 
   return (
     <Routes>
