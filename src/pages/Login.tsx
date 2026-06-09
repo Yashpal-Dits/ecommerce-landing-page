@@ -4,7 +4,6 @@ import { useAppStore } from "../store/useAppStore";
 import { loginSchema } from "../validations/schemas";
 import { fetchUserByEmail } from "../api";
 import { UserRole } from '../types';
-import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,13 +51,7 @@ const Login = () => {
       } catch (err) {
         console.error('Login error:', err);
 
-        const isNetworkError =
-          axios.isAxiosError(err) && !err.response;
-
-        const errorMessage = isNetworkError
-          ? 'Cannot connect to server. Make sure json-server is running:\n  npm run dev:all'
-          : (err as Error).message || 'Something went wrong. Please try again.';
-
+        const errorMessage = (err as Error).message || 'Something went wrong. Please try again.';
         addToast(errorMessage, 'error');
         setStatus({ submit: errorMessage });
       } finally {

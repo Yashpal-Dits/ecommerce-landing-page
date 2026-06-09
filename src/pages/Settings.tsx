@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { FileUpload } from '../components/ui/FileUpload';
 import { updateUser } from '../api';
-import { UserRole } from '../types';
+
 
 export const SettingsPage = () => {
   const { currentUser, setCurrentUser, addToast } = useAppStore();
@@ -43,16 +43,15 @@ export const SettingsPage = () => {
         username: username.trim() || currentUser.username,
         image: imageUrl || currentUser.image,
       };
-
-      
       await updateUser(updatedData);
 
-      localStorage.setItem('currentUser', JSON.stringify(updatedData));
+      const { password, ...safeUserData } = updatedData;
+      localStorage.setItem('currentUser', JSON.stringify(safeUserData));
       setCurrentUser(updatedData);
 
       addToast('Profile settings updated successfully!', 'success');
       
-  
+
       setIsEditingPicture(false);
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -76,7 +75,7 @@ export const SettingsPage = () => {
             <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-4">Profile Photo</h3>
             
             {!isEditingPicture ? (
-              // CASE 1: Standard display view of the photo with "Edit Photo" button below it
+          
               <div className="flex flex-col items-center animate-fade-in w-full">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200 shadow-lg bg-gray-50 mb-4 flex items-center justify-center">
                   {imageUrl ? (
@@ -101,7 +100,6 @@ export const SettingsPage = () => {
                 </button>
               </div>
             ) : (
-              // CASE 2: Upload Zone when user clicks "Change Photo"
               <div className="w-full animate-fade-in">
                 {/* Upload Area */}
                 <FileUpload
@@ -115,7 +113,6 @@ export const SettingsPage = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      // Reset to the current user's profile image and close upload area
                       setImageUrl(currentUser.image);
                       setIsEditingPicture(false);
                     }}

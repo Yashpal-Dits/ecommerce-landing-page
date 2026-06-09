@@ -1,10 +1,27 @@
 import ProductGrid from "../components/ProductGrid/ProductGrid";
 import { useAppStore } from "../store/useAppStore";
-import { PRODUCTS_BY_CATEGORY } from "../constants/products";
+import { useProductsByCategory } from "../queries/useProducts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Streetwear = () => {
   const { addToCart: handleAddToCart } = useAppStore();
-  const products = PRODUCTS_BY_CATEGORY.Streetwear;
+  const { data: products = [], isLoading } = useProductsByCategory('Streetwear');
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-white">
+        <div className="py-10 px-4 max-w-7xl mx-auto">
+          <Skeleton className="h-10 w-56 mb-2" />
+          <Skeleton className="h-6 w-80 mb-8" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-white">

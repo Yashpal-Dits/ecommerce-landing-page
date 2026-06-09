@@ -1,7 +1,35 @@
 import { Link } from 'react-router-dom';
-import { categoryCards } from '../constants/products';
+import { useCategories } from '../queries/useProducts';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const CategoriesHome = () => {
+  const { data: categoryCards = [], isLoading, error } = useCategories();
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="mb-8">
+          <Skeleton className="h-10 w-72 mb-2" />
+          <Skeleton className="h-5 w-96" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i}>
+              <Skeleton className="w-full aspect-square rounded-sm mb-4" />
+              <Skeleton className="h-6 w-40 mb-2" />
+              <Skeleton className="h-4 w-56 mb-3" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-4">Failed to load categories. Please try again later.</div>;
+  }
+
   return (
     <div>
       <div className="mb-8">

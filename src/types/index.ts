@@ -23,6 +23,14 @@ export interface Product {
   image: string;
 }
 
+export interface CategoryCard {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  path: string;
+}
+
 // ── User ──────────────────────────────────────────
 
 export interface User {

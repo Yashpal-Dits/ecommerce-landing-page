@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import ToastContainer from "./components/Toast/ToastContainer";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import CustomerLayout from "./components/Layouts/CustomerLayout";
@@ -8,10 +9,77 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SettingsPage from "./pages/Settings";
 import CustomerRoutes from "./routes/customerRoutes";
+import AdminAnalytics from "./pages/AdminAnalytics";
+import AdminUsers from "./pages/AdminUsers";
+import SuperAdminAnalytics from "./pages/SuperAdminAnalytics";
+import SuperAdminUsers from "./pages/SuperAdminUsers";
 import { useAppStore } from "./store/useAppStore";
+import { fetchUserById } from "./api";
 
 const AppRoutes = () => {
-  const { currentUser, addToast, impersonatedAdmin } = useAppStore();
+  const { currentUser, setCurrentUser, addToast, impersonatedAdmin, logout } = useAppStore();
+  const navigate = useNavigate();
+  const [isVerifyingUser, setIsVerifyingUser] = useState(true);
+  const hasVerifiedRef = useRef(false);
+
+  // ── Verify current user against API on app load ──
+  useEffect(() => {
+    // StrictMode double-mounts in dev — skip the second run
+    if (hasVerifiedRef.current) return;
+    hasVerifiedRef.current = true;
+
+    const verifyUser = async () => {
+      const storedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+
+      if (!storedUser || !storedUser.id) {
+        setCurrentUser(null);
+        setIsVerifyingUser(false);
+        return;
+      }
+
+      try {
+        const freshUser = await fetchUserById(storedUser.id);
+
+        if (freshUser) {
+          const userData = {
+            id: freshUser.id,
+            firstName: freshUser.firstName,
+            lastName: freshUser.lastName,
+            email: freshUser.email,
+            username: freshUser.username,
+            image: freshUser.image,
+            role: freshUser.role,
+            tokenVerified: freshUser.tokenVerified,
+          };
+          setCurrentUser(userData);
+        } else {
+          // User no longer exists in API
+          logout();
+          navigate('/login');
+          addToast('Session expired. Please login again.', 'info');
+        }
+      } catch (error) {
+        console.error('Error verifying user:', error);
+        // If API is down, use cached data as fallback
+        setCurrentUser(storedUser);
+      } finally {
+        setIsVerifyingUser(false);
+      }
+    };
+
+    verifyUser();
+  }, []);
+
+  if (isVerifyingUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const getLayoutComponent = () => {
     const userRole = currentUser?.role || 'customer';
@@ -32,7 +100,7 @@ const AppRoutes = () => {
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'super_admin';
 
   return (
-    <BrowserRouter>
+    <>
       {!currentUser ? (
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -42,6 +110,7 @@ const AppRoutes = () => {
       ) : isAdmin ? (
         <LayoutComponent>
           <Routes>
+            {/* ── Admin Routes ── */}
             <Route
               path="/admin/dashboard"
               element={
@@ -55,12 +124,7 @@ const AppRoutes = () => {
               path="/admin/analytics"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Admin Analytics</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">Analytics dashboard coming soon...</p>
-                    </div>
-                  </div>
+                  <AdminAnalytics />
                 </ProtectedRoute>
               }
             />
@@ -69,12 +133,7 @@ const AppRoutes = () => {
               path="/admin/users"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['admin', 'super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">Manage Users</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">User management dashboard coming soon...</p>
-                    </div>
-                  </div>
+                  <AdminUsers />
                 </ProtectedRoute>
               }
             />
@@ -88,6 +147,7 @@ const AppRoutes = () => {
               }
             />
 
+            {/* ── Super Admin Routes ── */}
             <Route
               path="/super-admin/dashboard"
               element={
@@ -101,12 +161,7 @@ const AppRoutes = () => {
               path="/super-admin/analytics"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">System Analytics</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">System analytics dashboard coming soon...</p>
-                    </div>
-                  </div>
+                  <SuperAdminAnalytics />
                 </ProtectedRoute>
               }
             />
@@ -115,12 +170,7 @@ const AppRoutes = () => {
               path="/super-admin/users"
               element={
                 <ProtectedRoute addToast={addToast} allowedRoles={['super_admin']}>
-                  <div>
-                    <h1 className="text-3xl font-bold mb-4 text-gray-900">All Users</h1>
-                    <div className="backdrop-blur-sm bg-white/70 border border-white/40 rounded-2xl p-6">
-                      <p className="text-gray-600">All users management dashboard coming soon...</p>
-                    </div>
-                  </div>
+                  <SuperAdminUsers />
                 </ProtectedRoute>
               }
             />
@@ -154,20 +204,18 @@ const AppRoutes = () => {
           <CustomerRoutes />
         </LayoutComponent>
       )}
-    </BrowserRouter>
+    </>
   );
 };
 
-const ToastContainerWrapper = () => {
+const App = () => {
   const { toasts, removeToast } = useAppStore();
-  return <ToastContainer toasts={toasts} removeToast={removeToast} />;
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+    </BrowserRouter>
+  );
 };
-
-const App = () => (
-  <>
-    <AppRoutes />
-    <ToastContainerWrapper />
-  </>
-);
 
 export default App;
