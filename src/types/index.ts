@@ -31,6 +31,69 @@ export interface CategoryCard {
   path: string;
 }
 
+// ── Analytics ─────────────────────────────────────
+
+export type AnalyticsColor = 'green' | 'blue' | 'purple' | 'amber' | 'pink';
+
+export type AnalyticsIconName =
+  | 'users'
+  | 'package'
+  | 'dollar'
+  | 'shoppingBag'
+  | 'shield'
+  | 'check'
+  | 'activity';
+
+export interface AnalyticsSummaryCard {
+  id: string;
+  label: string;
+  metric: string;
+  icon: AnalyticsIconName;
+  color: AnalyticsColor;
+  change?: string;
+  changeMetric?: string;
+}
+
+export interface AdminAnalyticsCategoryConfig {
+  name: string;
+  color: AnalyticsColor;
+}
+
+export interface AdminAnalyticsUserBreakdownConfig {
+  id: string;
+  label: string;
+  metric: string;
+  color: AnalyticsColor;
+}
+
+export interface AdminAnalyticsConfig {
+  summaryCards: AnalyticsSummaryCard[];
+  productCategories: AdminAnalyticsCategoryConfig[];
+  userBreakdown: AdminAnalyticsUserBreakdownConfig[];
+  recentProductsLimit: number;
+}
+
+export interface SuperAdminRoleBreakdownConfig {
+  id: string;
+  label: string;
+  role: UserRole;
+  color: AnalyticsColor;
+}
+
+export interface SuperAdminActivityItem {
+  id: string;
+  action: string;
+  user: string;
+  time: string;
+  icon: AnalyticsIconName;
+}
+
+export interface SuperAdminAnalyticsConfig {
+  summaryCards: AnalyticsSummaryCard[];
+  roleBreakdown: SuperAdminRoleBreakdownConfig[];
+  recentActivity: SuperAdminActivityItem[];
+}
+
 // ── User ──────────────────────────────────────────
 
 export interface User {

@@ -1,5 +1,16 @@
 import axios from 'axios';
-import { NewUser, User, Product, CategoryCard } from '@/types';
+import { NewUser, User, Product, CategoryCard, AdminAnalyticsConfig, SuperAdminAnalyticsConfig } from '@/types';
+
+import {
+  fetchAllUsersGraphql,
+  fetchProductByIdGraphql,
+  fetchProductsByCategoryGraphql,
+  fetchProductsGraphql,
+  fetchUserByEmailGraphql,
+  fetchUserByIdGraphql,
+  fetchUsersByRoleGraphql,
+} from './graphqlApi';
+
 
 const API_URL = (import.meta.env.VITE_API_URL as string | undefined) || '';
 
@@ -91,6 +102,58 @@ export const updateUser = async (user: User): Promise<User> => {
   }
 };
 
+
+//----- user graphql api-------
+
+// export const fetchUserByEmail = async (
+//   email: string
+// ): Promise<User | null> => {
+//   try {
+//     return await fetchUserByEmailGraphql(email);
+//   } catch (error) {
+//     console.error('GraphQL fetch user by email error:', error);
+//     throw new Error(
+//       `Failed to fetch user: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
+
+// export const fetchUserById = async (id: string): Promise<User | null> => {
+//   try {
+//     return await fetchUserByIdGraphql(id);
+//   } catch (error) {
+//     console.error('GraphQL fetch user by id error:', error);
+//     return null;
+//   }
+// };
+
+// export const fetchAllUsers = async (): Promise<User[]> => {
+//   try {
+//     return await fetchAllUsersGraphql();
+//   } catch (error) {
+//     console.error('GraphQL fetch all users error:', error);
+//     throw new Error(
+//       `Failed to fetch users: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
+
+// export const fetchUsersByRole = async (role: string): Promise<User[]> => {
+//   try {
+//     return await fetchUsersByRoleGraphql(role);
+//   } catch (error) {
+//     console.error('GraphQL fetch users by role error:', error);
+//     throw new Error(
+//       `Failed to fetch users by role: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
 // ── Product APIs ───────────────────────────────────────
 
 export const fetchProducts = async (): Promise<Product[]> => {
@@ -124,8 +187,59 @@ export const fetchProductById = async (id: number): Promise<Product | undefined>
     throw new Error(`Failed to fetch product: ${getErrorMessage(error)}`);
   }
 };
+  
+// --------- product graphQL api----------
+
+// export const fetchProducts = async (): Promise<Product[]> => {
+//   try {
+//     return await fetchProductsGraphql();
+//   } catch (error) {
+//     console.error('GraphQL fetch products error:', error);
+//     throw new Error(
+//       `Failed to fetch products: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
+
+// export const fetchProductsByCategory = async (
+//   category: string
+// ): Promise<Product[]> => {
+//   try {
+//     return await fetchProductsByCategoryGraphql(category);
+//   } catch (error) {
+//     console.error(
+//       `GraphQL fetch products by category (${category}) error:`,
+//       error
+//     );
+//     throw new Error(
+//       `Failed to fetch products by category: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
+
+// export const fetchProductById = async (
+//   id: number
+// ): Promise<Product | undefined> => {
+//   try {
+//     return await fetchProductByIdGraphql(id);
+//   } catch (error) {
+//     console.error(`GraphQL fetch product by id (${id}) error:`, error);
+//     throw new Error(
+//       `Failed to fetch product: ${
+//         error instanceof Error ? error.message : 'Unknown error'
+//       }`
+//     );
+//   }
+// };
 
 // ── Category APIs ──────────────────────────────────────
+
+
+
 
 export const fetchCategories = async (): Promise<CategoryCard[]> => {
   try {
@@ -134,5 +248,27 @@ export const fetchCategories = async (): Promise<CategoryCard[]> => {
   } catch (error) {
     console.error('Fetch categories error:', error);
     throw new Error(`Failed to fetch categories: ${getErrorMessage(error)}`);
+  }
+};
+
+// ── Analytics Config APIs ─────────────────────────
+
+export const fetchAdminAnalytics = async (): Promise<AdminAnalyticsConfig> => {
+  try {
+    const { data } = await apiClient.get<AdminAnalyticsConfig>('/adminAnalytics');
+    return data;
+  } catch (error) {
+    console.error('Fetch admin analytics error:', error);
+    throw new Error(`Failed to fetch admin analytics: ${getErrorMessage(error)}`);
+  }
+};
+
+export const fetchSuperAdminAnalytics = async (): Promise<SuperAdminAnalyticsConfig> => {
+  try {
+    const { data } = await apiClient.get<SuperAdminAnalyticsConfig>('/superAdminAnalytics');
+    return data;
+  } catch (error) {
+    console.error('Fetch super admin analytics error:', error);
+    throw new Error(`Failed to fetch super admin analytics: ${getErrorMessage(error)}`);
   }
 };

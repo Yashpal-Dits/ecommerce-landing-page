@@ -5,9 +5,6 @@ import { useAppStore } from '../../store/useAppStore';
 import { fetchUsersByRole, fetchProducts } from '../../api';
 import { User, Product } from '@/types';
 
-// ──────────────────────────────────────────────────────
-// Super Admin Dashboard Stats (self-contained, no props needed)
-// ──────────────────────────────────────────────────────
 
 export const SuperAdminDashboardStats = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -77,7 +74,7 @@ export const SuperAdminDashboardStats = () => {
           <div className="flex items-center justify-between mb-3">
             <FiUsers className="w-6 h-6 text-blue-600" />
             <span className="text-xs font-semibold text-green-600 flex items-center gap-1">
-              <FiTrendingUp className="w-3 h-3" /> +2.5%
+              
             </span>
           </div>
           <p className="text-3xl font-bold text-gray-900 mb-1">{totalUsers}</p>
@@ -88,7 +85,7 @@ export const SuperAdminDashboardStats = () => {
           <div className="flex items-center justify-between mb-3">
             <FiPackage className="w-6 h-6 text-green-600" />
             <span className="text-xs font-semibold text-green-600 flex items-center gap-1">
-              <FiTrendingUp className="w-3 h-3" /> +5
+             
             </span>
           </div>
           <p className="text-3xl font-bold text-gray-900 mb-1">{totalProducts}</p>
@@ -99,7 +96,7 @@ export const SuperAdminDashboardStats = () => {
           <div className="flex items-center justify-between mb-3">
             <FiDollarSign className="w-6 h-6 text-purple-600" />
             <span className="text-xs font-semibold text-green-600 flex items-center gap-1">
-              <FiTrendingUp className="w-3 h-3" /> +12.5%
+             
             </span>
           </div>
           <p className="text-3xl font-bold text-gray-900 mb-1">₹{totalCatalogValue.toLocaleString()}</p>
@@ -110,7 +107,7 @@ export const SuperAdminDashboardStats = () => {
           <div className="flex items-center justify-between mb-3">
             <FiShoppingBag className="w-6 h-6 text-amber-600" />
             <span className="text-xs font-semibold text-green-600 flex items-center gap-1">
-              <FiTrendingUp className="w-3 h-3" /> +8
+             
             </span>
           </div>
           <p className="text-3xl font-bold text-gray-900 mb-1">{totalOrders.toLocaleString()}</p>
@@ -134,7 +131,7 @@ export const SuperAdminDashboardStats = () => {
                 <div key={cat.name}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm font-medium text-gray-700">{cat.name}</span>
-                    <span className="text-sm font-bold text-gray-900">{cat.count} products ({cat.percentage}%)</span>
+                    <span className="text-sm font-bold text-gray-900">{cat.count} products</span>
                   </div>
                   <div className="w-full bg-gray-100 rounded-full h-2.5">
                     <div

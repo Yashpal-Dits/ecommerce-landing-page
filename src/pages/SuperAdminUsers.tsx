@@ -1,9 +1,15 @@
+import { useEffect, useMemo, useState } from 'react';
 import { FiUsers, FiMail, FiShield, FiCheck, FiX, FiUserPlus, FiSearch } from 'react-icons/fi';
 import { useAllUsers } from '@/queries/useProducts';
 import { User } from '@/types';
+import Pagination from '@/components/Pagination/Pagination';
+import { usePagination } from '@/hooks/usePagination';
+
+const USERS_PER_PAGE = 5;
 
 const SuperAdminUsers = () => {
   const { data: users = [], isLoading } = useAllUsers();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const roleColors: Record<string, string> = {
     admin: 'bg-amber-100 text-amber-700',
@@ -14,6 +20,49 @@ const SuperAdminUsers = () => {
   const totalCustomers = users.filter((u) => u.role === 'customer').length;
   const totalAdmins = users.filter((u) => u.role === 'admin').length;
   const totalSuperAdmins = users.filter((u) => u.role === 'super_admin').length;
+
+  const filteredUsers = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) return users;
+
+    return users.filter((user) => {
+      const searchableText = [
+        user.firstName,
+        user.lastName,
+        user.username,
+        user.email,
+        user.role.replace('_', ' '),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchableText.includes(normalizedSearch);
+    });
+  }, [searchTerm, users]);
+
+  const {
+    page,
+    skip,
+    limit,
+    totalPages,
+    hasNext,
+    hasPrev,
+    goToPage,
+    nextPage,
+    prevPage,
+  } = usePagination({ totalItems: filteredUsers.length, limit: USERS_PER_PAGE });
+
+  useEffect(() => {
+    goToPage(1);
+  }, [searchTerm, goToPage]);
+
+  const paginatedUsers = filteredUsers.slice(skip, skip + limit);
+
+  const paginationSummary = filteredUsers.length
+    ? `Showing ${skip + 1}–${Math.min(skip + limit, filteredUsers.length)} of ${filteredUsers.length} users`
+    : 'No users found';
 
   return (
     <div>
@@ -85,6 +134,8 @@ const SuperAdminUsers = () => {
                 <input
                   type="text"
                   placeholder="Search users..."
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:outline-none focus:border-purple-400 transition-colors"
                 />
               </div>
@@ -101,57 +152,78 @@ const SuperAdminUsers = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {users.map((user: User) => (
-                    <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
-                            {user.image ? (
-                              <img src={user.image} alt={user.firstName} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-xs font-bold text-gray-600">
-                                {user.firstName?.charAt(0).toUpperCase()}
-                              </span>
-                            )}
+                  {paginatedUsers.length > 0 ? (
+                    paginatedUsers.map((user: User) => (
+                      <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                              {user.image ? (
+                                <img src={user.image} alt={user.firstName} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-xs font-bold text-gray-600">
+                                  {user.firstName?.charAt(0).toUpperCase()}
+                                </span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {user.firstName} {user.lastName}
+                              </p>
+                              <p className="text-xs text-gray-500">@{user.username}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {user.firstName} {user.lastName}
-                            </p>
-                            <p className="text-xs text-gray-500">@{user.username}</p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2 text-gray-600">
+                            <FiMail className="w-3.5 h-3.5" />
+                            {user.email}
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <FiMail className="w-3.5 h-3.5" />
-                          {user.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full capitalize ${
-                            roleColors[user.role] || 'bg-gray-100 text-gray-700'
-                          }`}
-                        >
-                          {user.role.replace('_', ' ')}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {user.tokenVerified ? (
-                          <span className="flex items-center gap-1.5 text-green-600">
-                            <FiCheck className="w-4 h-4" /> Verified
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-full capitalize ${
+                              roleColors[user.role] || 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {user.role.replace('_', ' ')}
                           </span>
-                        ) : (
-                          <span className="flex items-center gap-1.5 text-red-600">
-                            <FiX className="w-4 h-4" /> Pending
-                          </span>
-                        )}
+                        </td>
+                        <td className="px-6 py-4">
+                          {user.tokenVerified ? (
+                            <span className="flex items-center gap-1.5 text-green-600">
+                              <FiCheck className="w-4 h-4" /> Verified
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1.5 text-red-600">
+                              <FiX className="w-4 h-4" /> Pending
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-10 text-center text-gray-500">
+                        No users found.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
+            </div>
+
+            <div className="px-6 pb-6">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                hasNext={hasNext}
+                hasPrev={hasPrev}
+                onPageChange={goToPage}
+                onNext={nextPage}
+                onPrev={prevPage}
+                summary={paginationSummary}
+              />
             </div>
           </div>
         </>
